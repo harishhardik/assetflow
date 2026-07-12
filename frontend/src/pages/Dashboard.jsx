@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
+import Chatbot from "../components/Chatbot";
 
 function Dashboard({ setCurrentView }) {
   const { 
@@ -413,19 +414,24 @@ function Dashboard({ setCurrentView }) {
       </div>
 
       {/* Dynamic Contextual FAB */}
-      {(isAdmin || isManager) && (
-        <button 
+        {(isAdmin || isManager) && (
+        <button
           onClick={() => setCurrentView('assets')}
           className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-xl shadow-primary/20 hover:scale-110 active:scale-95 transition-all z-40 group"
         >
-          <span className="material-symbols-outlined text-[28px] group-hover:rotate-90 transition-transform duration-300">add</span>
+          <span className="material-symbols-outlined text-[28px] group-hover:rotate-90 transition-transform duration-300">
+            add
+          </span>
           <span className="absolute right-16 bg-surface-container-highest text-on-surface px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-outline-variant font-semibold">
             Quick Register
           </span>
         </button>
       )}
+
+      {/* AI Chatbot */}
+      <Chatbot />
+
     </div>
   );
 }
-
 export default Dashboard;
