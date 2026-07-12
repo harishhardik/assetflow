@@ -4,7 +4,7 @@ A centralized ERP platform for tracking, allocating, and maintaining physical as
 
 ---
 
-## 📋 Quick Overview
+##  Quick Overview
 
 **What it does:**
 - Register and track assets through their complete lifecycle
@@ -22,7 +22,7 @@ A centralized ERP platform for tracking, allocating, and maintaining physical as
 
 ---
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 ### Tech Stack (Recommended)
 - **Frontend**: React + TypeScript (Responsive UI)
@@ -49,7 +49,7 @@ A centralized ERP platform for tracking, allocating, and maintaining physical as
 
 ---
 
-## 🎯 8-Hour Implementation Plan
+##  8-Hour Implementation Plan
 
 ### **Hours 0–1: Setup & Database (Parallel)**
 
@@ -150,7 +150,7 @@ A centralized ERP platform for tracking, allocating, and maintaining physical as
 
 ---
 
-## 📊 Database Schema (DDL Overview)
+##  Database Schema (DDL Overview)
 
 ```sql
 CREATE TABLE users (
@@ -272,7 +272,7 @@ CREATE TABLE activity_logs (
 
 ---
 
-## 🔑 Critical Business Rules (MUST Implement)
+##  Critical Business Rules (MUST Implement)
 
 1. **No double-allocation**: An asset already held by someone cannot be allocated again. System must show current holder and offer transfer instead.
 2. **Conflict-free bookings**: Two bookings cannot overlap. Adjacent bookings (9:00–10:00 and 10:00–11:00) are allowed.
@@ -325,7 +325,7 @@ CREATE TABLE activity_logs (
 
 ---
 
-## 🧪 Testing Checklist
+##  Testing Checklist
 
 By hour 8, validate:
 
@@ -341,7 +341,7 @@ By hour 8, validate:
 
 ---
 
-## 🚀 How to Run
+##  How to Run
 
 ### Backend Setup
 ```bash
@@ -363,7 +363,7 @@ npm run seed
 
 ---
 
-## 📝 API Endpoints (Reference)
+##  API Endpoints (Reference)
 
 ### Auth
 - `POST /api/auth/signup` – Create employee account
@@ -407,7 +407,7 @@ npm run seed
 
 ---
 
-## 💡 Tips for Success
+##  Tips for Success
 
 1. **Start with auth**: Everything depends on knowing who the user is. Lock this down first.
 2. **Mock data early**: Create 5–10 fake assets, users, and allocations so you can test UI without waiting for APIs.
@@ -419,7 +419,7 @@ npm run seed
 
 ---
 
-## 📊 Success Criteria (Judging)
+##  Success Criteria (Judging)
 
 By end of hackathon:
 - ✅ Users can register, login, and see their role-based dashboard
@@ -453,28 +453,8 @@ By end of hackathon:
 - **Mockup**: https://app.excalidraw.com/l/65VNwvy7c4X/5ceOBMjbDby
 - **Git Repo**: (Set up your own GitHub org)
 
----
 
-## ❓ FAQs
 
-**Q: What if an asset is already allocated when someone tries to allocate it?**
-A: Show error: "This asset is currently held by [Holder Name]. Request a transfer instead?" Button to initiate transfer request.
 
-**Q: Can an employee allocate to themselves?**
-A: Yes, if they have permission (default: yes for their own requests, no for others without approval).
 
-**Q: What happens to bookings if a resource is retired?**
-A: Upcoming bookings are cancelled with notification. Completed bookings stay in history.
 
-**Q: Can an audit flag an asset as Damaged but still Available?**
-A: Yes. Audit findings are independent of asset status. You may want to add a "Condition" field tracking separately.
-
----
-
-## 📞 Questions During Hackathon?
-
-Check the problem statement PDF for edge cases. If ambiguous, **make a reasonable decision and document it** (add to DECISIONS.md in your repo).
-
----
-
-**Good luck! 🚀 You've got this.**
