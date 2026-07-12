@@ -18,6 +18,12 @@ public class AuditController {
 
     private final AuditService auditService;
 
+    @GetMapping
+    @Operation(summary = "Get list of all audit cycles")
+    public ResponseEntity<java.util.List<AuditCycleDto>> getAllCycles() {
+        return ResponseEntity.ok(auditService.getAllCycles());
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'ASSET_MANAGER')")
     @Operation(summary = "Create/Schedule a new asset audit cycle (Admin/Manager only)")

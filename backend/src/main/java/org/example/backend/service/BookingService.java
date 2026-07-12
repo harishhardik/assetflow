@@ -80,6 +80,13 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<BookingDto> getAllBookings() {
+        return bookingRepository.findAll().stream()
+                .map(EntityMapper::toBookingDto)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public void cancelBooking(Long id) {
         Booking booking = bookingRepository.findById(id)

@@ -1,24 +1,39 @@
-import React, { useContext } from 'react';
-import { AppContext } from '../context/AppContext';
+import React from 'react';
 
-function Sidebar({ currentView, setCurrentView, onLogout }) {
-  const { currentUser, userRole } = useContext(AppContext);
-
+function Sidebar({ userRole, currentView, setCurrentView, onLogout }) {
+  // Determine profile information based on userRole
   const getProfileData = () => {
-    if (currentUser) {
-      return {
-        name: currentUser.name,
-        roleTitle: currentUser.role,
-        initials: currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
-        avatar: currentUser.avatar || ''
-      };
+    switch (userRole) {
+      case 'Admin':
+        return {
+          name: 'Alex Chen',
+          roleTitle: 'System Admin',
+          initials: 'AC',
+          avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAyYd0o6JZKPuU2SXgB5qW6sfNqUrx2e63Aj40-s9btmia7JuP1cvguzbbevdi-boIjifAQkw69rUIBTuRmxVBJb6_Z0FzWrrQpaOmYfmBRovu8R5y46ILNrlPmQfQUMSIrBLheTA31Wv9RE05QWSGsy3-f1-GXrerIUW387VnWK_sHhldVjf_FnC-i021KwpY8gmWAmv7jH2T8b0t3Dv9OeDPKYFRpUS_eUn9W3hgzYBOeBa0W5icpUk7wKPuLzlGqCK2Lkb7lFPC8'
+        };
+      case 'Asset Manager':
+        return {
+          name: 'Jane Doe',
+          roleTitle: 'Asset Manager',
+          initials: 'JD',
+          avatar: '' // Will use initials container
+        };
+      case 'Department Head':
+        return {
+          name: 'Marcus Thorne',
+          roleTitle: 'Design Ops Lead',
+          initials: 'MT',
+          avatar: ''
+        };
+      case 'Employee':
+      default:
+        return {
+          name: 'Sarah Jenkins',
+          roleTitle: 'Senior Engineer',
+          initials: 'SJ',
+          avatar: ''
+        };
     }
-    return {
-      name: 'Guest User',
-      roleTitle: 'Employee',
-      initials: 'GU',
-      avatar: ''
-    };
   };
 
   const profile = getProfileData();
@@ -31,9 +46,8 @@ function Sidebar({ currentView, setCurrentView, onLogout }) {
     { id: 'allocation', label: 'Allocation & Transfer', icon: 'move_up', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
     { id: 'booking', label: 'Resource Booking', icon: 'event_available', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
     { id: 'maintenance', label: 'Maintenance', icon: 'build', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
-    { id: 'audit', label: 'Asset Audit', icon: 'fact_check', roles: ['Admin', 'Asset Manager'] },
-    { id: 'reports', label: 'Reports & Analytics', icon: 'bar_chart', roles: ['Admin', 'Asset Manager', 'Department Head'] },
-    { id: 'logs', label: 'Activity Logs', icon: 'list_alt', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] }
+    { id: 'reports', label: 'Reports', icon: 'analytics', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
+    { id: 'notifications', label: 'Notifications', icon: 'notifications', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] }
   ];
 
   // Filter navigation items by active user role
@@ -55,7 +69,7 @@ function Sidebar({ currentView, setCurrentView, onLogout }) {
       </div>
 
       {/* Main Navigation Links */}
-      <nav className="flex-1 px-4 space-y-1.5">
+      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto custom-scrollbar">
         {visibleNavItems.map(item => {
           const isActive = currentView === item.id;
           return (

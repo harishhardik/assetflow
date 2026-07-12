@@ -38,6 +38,13 @@ public class AuditService {
     private final DepartmentRepository departmentRepository;
     private final ActivityLogService activityLogService;
 
+    @Transactional(readOnly = true)
+    public List<AuditCycleDto> getAllCycles() {
+        return auditCycleRepository.findAll().stream()
+                .map(EntityMapper::toAuditCycleDto)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public AuditCycleDto createCycle(AuditCycleDto.Create dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

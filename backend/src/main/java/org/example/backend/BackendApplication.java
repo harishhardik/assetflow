@@ -37,7 +37,7 @@ public class BackendApplication {
         String username = props.getProperty("spring.datasource.username");
         String password = props.getProperty("spring.datasource.password");
 
-        if (url == null || username == null) {
+        if (url == null || username == null || !url.contains("postgresql")) {
             return;
         }
 

@@ -18,6 +18,12 @@ public class EmployeeController {
 
     private final UserService userService;
 
+    @GetMapping
+    @Operation(summary = "Get list of all employees")
+    public ResponseEntity<java.util.List<AuthDto.UserDto>> getAllEmployees() {
+        return ResponseEntity.ok(userService.getAllEmployees());
+    }
+
     @PostMapping("/{id}/promote")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Promote an employee to a higher role like MANAGER, DEPARTMENT_HEAD, or ADMIN (Admin only)")
