@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import Login from './pages/Login';
 import MainLayout from './components/MainLayout';
 import Dashboard from './pages/Dashboard';
@@ -7,18 +7,17 @@ import AllocationTransfer from './pages/AllocationTransfer';
 import ResourceBooking from './pages/ResourceBooking';
 import MaintenanceBoard from './pages/MaintenanceBoard';
 import OrganizationSetup from './pages/OrganizationSetup';
-import AssetAudit from './pages/AssetAudit';
-import ReportsAnalytics from './pages/ReportsAnalytics';
-import ActivityLogs from './pages/ActivityLogs';
-import { AppContextProvider, AppContext } from './context/AppContext';
+import Reports from './pages/Reports';
+import Notifications from './pages/Notifications';
 
-function AppContent() {
+function App() {
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme');
     return saved || 'dark';
   });
-
-  const { currentUser, userRole, handleLogout } = useContext(AppContext);
+  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState('Admin'); // Admin, Asset Manager, Department Head, Employee
   const [currentView, setCurrentView] = useState('dashboard');
 
   useEffect(() => {
@@ -33,33 +32,42 @@ function AppContent() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  const handleLogin = (role) => {
+    setUserRole(role);
+    setIsLoggedIn(true);
+    setCurrentView('dashboard');
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setCurrentView('dashboard');
+  };
+
   const renderActiveView = () => {
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard setCurrentView={setCurrentView} />;
+        return <Dashboard userRole={userRole} setCurrentView={setCurrentView} />;
       case 'assets':
-        return <AssetsManagement />;
+        return <AssetsManagement userRole={userRole} />;
       case 'allocation':
-        return <AllocationTransfer />;
+        return <AllocationTransfer userRole={userRole} />;
       case 'booking':
-        return <ResourceBooking />;
+        return <ResourceBooking userRole={userRole} />;
       case 'maintenance':
-        return <MaintenanceBoard />;
+        return <MaintenanceBoard userRole={userRole} />;
       case 'organization':
-        return <OrganizationSetup />;
-      case 'audit':
-        return <AssetAudit />;
+        return <OrganizationSetup userRole={userRole} />;
       case 'reports':
-        return <ReportsAnalytics />;
-      case 'logs':
-        return <ActivityLogs />;
+        return <Reports />;
+      case 'notifications':
+        return <Notifications />;
       default:
-        return <Dashboard setCurrentView={setCurrentView} />;
+        return <Dashboard userRole={userRole} setCurrentView={setCurrentView} />;
     }
   };
 
-  if (!currentUser) {
-    return <Login theme={theme} setTheme={setTheme} />;
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} theme={theme} setTheme={setTheme} />;
   }
 
   return (
@@ -73,14 +81,6 @@ function AppContent() {
     >
       {renderActiveView()}
     </MainLayout>
-  );
-}
-
-function App() {
-  return (
-    <AppContextProvider>
-      <AppContent />
-    </AppContextProvider>
   );
 }
 

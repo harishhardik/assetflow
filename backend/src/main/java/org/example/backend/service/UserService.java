@@ -25,6 +25,13 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public java.util.List<AuthDto.UserDto> getAllEmployees() {
+        return userRepository.findAll().stream()
+                .map(EntityMapper::toUserDto)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public AuthDto.UserDto getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));

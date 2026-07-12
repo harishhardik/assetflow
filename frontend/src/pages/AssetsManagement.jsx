@@ -1,19 +1,9 @@
-import React, { useState, useContext } from 'react';
-import { AppContext } from '../context/AppContext';
+import React, { useState } from 'react';
 
-function AssetsManagement() {
-  const { 
-    userRole, 
-    assets, 
-    categories, 
-    departments, 
-    registerAsset, 
-    updateAsset, 
-    tickets 
-  } = useContext(AppContext);
-
+function AssetsManagement({ userRole }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [selectedDept, setSelectedDept] = useState('All Departments');
   const [selectedStatus, setSelectedStatus] = useState('All Status');
   const [selectedLoc, setSelectedLoc] = useState('Global Locations');
   
@@ -25,121 +15,134 @@ function AssetsManagement() {
   // Asset Creation Modal states
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newAssetName, setNewAssetName] = useState('');
-  const [newAssetCategory, setNewAssetCategory] = useState('');
+  const [newAssetCategory, setNewAssetCategory] = useState('Computing');
   const [newAssetLocation, setNewAssetLocation] = useState('San Francisco');
   const [newAssetSerial, setNewAssetSerial] = useState('');
-  const [newAssetCost, setNewAssetCost] = useState('');
-  const [newAssetDate, setNewAssetDate] = useState(new Date().toISOString().split('T')[0]);
-  const [newAssetCondition, setNewAssetCondition] = useState('New');
-  const [newAssetPhoto, setNewAssetPhoto] = useState('');
-  const [newAssetShared, setNewAssetShared] = useState(false);
-  const [newAssetCategoryFields, setNewAssetCategoryFields] = useState({});
 
-  // QR Simulator States
-  const [isQrScanning, setIsQrScanning] = useState(false);
-  const [qrResultMsg, setQrResultMsg] = useState('');
+  // Initial Mock Assets Data
+  const [assets, setAssets] = useState([
+    {
+      tag: 'AF-2024-001',
+      name: 'MacBook Pro M3 Max',
+      icon: 'laptop_mac',
+      category: 'Computing',
+      assignedTo: 'James Chen',
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCjtp_b0IA6kAlZRQJRsx7PfPw2RG9bakudJ8FremNWZdpp77e4sFd7UMIRPUPdri2WoRwAQR77I7rMGSLaalbJEppRxo5GW969OSkTqLxUgq7_W1_UAZJHUuIbNsHJRH-6M1nB8Ym77bHKlMHlqsjZkm_Rjbm_c-c-Ks-z4mlnzTivH5qmpQKBU2AKcpzxe82Mbq6HTU74FzAcS42Q8ObQTmEfIDZ0YCr0gfkSUuTJcShGGPTp9yy7kqOniLXowM9u4s384T-R1ZvM',
+      dept: 'Engineering',
+      status: 'Active',
+      condition: 'Excellent',
+      location: 'San Francisco',
+      lifecycle: 85,
+      serial: 'C02FX1234567',
+      purchaseDate: 'Jan 12, 2024',
+      warrantyEnds: 'Jan 12, 2027',
+      value: '$4,299.00',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB8zmtVPVnUvm1HAUUrW_muh3wkYv2eaaOr5tCutkFptfLiesStUrSkaIUFl1z7fhmYrZokQcfFd6XM3pMINdGOyED1fXx1JrRa82M7TyB7Kg7rORcUf62I6BSd0RzwTS33_Kozzg0EdTr5Fe8M5ej-m7VeUiTJcuB2HZ-yFWTfljErsKePU7Op9CgF3-S2AWXc6_OvWTtoWMULcgb8vwj5eexWYJlaTbS42qWg6-zg5Fo4-8wEWwcWMosRJcdh1Xpw39qVN8AHllqr'
+    },
+    {
+      tag: 'AF-2024-118',
+      name: 'Cisco Catalyst 9300',
+      icon: 'router',
+      category: 'Networking',
+      assignedTo: '',
+      avatar: '',
+      dept: 'Engineering',
+      status: 'In Storage',
+      condition: 'New',
+      location: 'London Hub',
+      lifecycle: 100,
+      serial: 'SN-CS9300-8812',
+      purchaseDate: 'Mar 02, 2024',
+      warrantyEnds: 'Mar 02, 2029',
+      value: '$2,850.00',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNINNudG-NFbPlNeUDyCO2BZovgEtRV6o-9xyMMu1icxAdyn_hz-6HliOQWP-pFDhLv-MsJrl8ft0FxZrmjUAMjIKzrNi9ghmkTIiXrWkrQsh6nFsIlMFHzf-psUrhmvjSgZKJH4CQsonO3IpvxyCL4F2LOrY2gDCYYP3vFtvWJLUQgucwFBiod8O7x97qb-pJxK61vdxrLFglf-cMgPmKboMbK-GFlwYm58nN6xM8KaIBfmy6snlAiFQGvCU2uzPM0uE2YhT0DcsU'
+    },
+    {
+      tag: 'AF-2023-942',
+      name: 'HP LaserJet Enterprise',
+      icon: 'print',
+      category: 'Office Equipment',
+      assignedTo: 'HR Department',
+      avatar: '',
+      dept: 'HR & Admin',
+      status: 'Repairing',
+      condition: 'Fair',
+      location: 'HQ - Floor 4',
+      lifecycle: 35,
+      serial: 'HP-LJE-441290',
+      purchaseDate: 'Jun 15, 2023',
+      warrantyEnds: 'Jun 15, 2026',
+      value: '$950.00',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAZe3Gn-xoezTA8gB96I02-3KfaU7mqvt0zAx-dZgjRvccZg_QN-N9j2POwo8rI00BARnJu7Z_NNhQORtIZN2tOBWKrXm3rb-6wvGmjIeIUnOZzxRUcxmXaByrMLK2DsZx-JGG7sG0qkR7nXvxeQyAjwkX3wf1tHynK-z3PWSGPsSC6kT-JpLy9pwO7g0Xz3kWZL3Zh6DbNJr01L1iRTkwbKbXQ8MULnnt6w_lYgtD0m6FvscFAfCGsQ-7xiWk__kzRrXjChSf7Ot2M'
+    },
+    {
+      tag: 'AF-2024-055',
+      name: 'Dell UltraSharp 32"',
+      icon: 'desktop_windows',
+      category: 'Computing',
+      assignedTo: 'Sarah Miller',
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDHXHg1o3w6zRk505vBu5Sq1-AFX_Gs7tgTufRdi1bkFPvxbevvMJ9Wwfr4QdERAE822KGxlQU2_TK9tx8YyFcymB12biRix21YIVj9kpS5P1ao3DOCfWdK2AMFHtLsT-eD1xhYvqI9GQdYDgrrA92qFanJBf6LVhjGzOt2yXrFdSo2y9eDD3rXSr1nXyZUJtimyyJfjZpuH-R7hs_L9w3Dhdao3nwr-Y2WtrAyGeBj--ynhpUyhyk_YoLrRrAbCa_Sf6t163jurB69',
+      dept: 'Design',
+      status: 'Active',
+      condition: 'Good',
+      location: 'Remote',
+      lifecycle: 70,
+      serial: 'DELL-US32-9012',
+      purchaseDate: 'Feb 10, 2024',
+      warrantyEnds: 'Feb 10, 2027',
+      value: '$1,199.00',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB6dTqkfNg67v98knj6n6AJX0FunGGmN_zbiRfJEPXBWAa0y60G3-2RRps3yINyCLzeoa1fHPNa5LqE22LuoLNm1dV3suVS6ZUQg-p22e8o5yAgoP6ab7igXlZTMLysqPJsyB4ABdq5ZP_rehCeF19YNYf_uuYNZB6ZbT5_STntrs3095xVJ5QjDDUSJaNCsmGwiFxPdT4ZjZQUxZaqhKudw-bUXd_p6ZH99AjukWdMaBnDtv6I3ZlAM8FOL4rlxdTk_QAdbOeQp3bn'
+    }
+  ]);
 
   const handleRowClick = (asset) => {
     setSelectedAsset(asset);
     setIsDrawerOpen(true);
-    setDrawerTab('Overview');
   };
 
-  const handleCategorySelectChange = (catName) => {
-    setNewAssetCategory(catName);
-    // Initialize custom field values for selected category
-    const cat = categories.find(c => c.name === catName);
-    const initialFields = {};
-    if (cat && cat.attributes) {
-      cat.attributes.forEach(attr => {
-        initialFields[attr] = '';
-      });
-    }
-    setNewAssetCategoryFields(initialFields);
-  };
-
-  const handleCategoryFieldChange = (field, value) => {
-    setNewAssetCategoryFields(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleRegisterSubmit = (e) => {
+  const handleRegisterAsset = (e) => {
     e.preventDefault();
-    const photoUrl = newAssetPhoto.trim() || 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=300&h=200&q=80';
-    
-    registerAsset({
+    const newTag = `AF-2026-${Math.floor(100 + Math.random() * 900)}`;
+    const newAsset = {
+      tag: newTag,
       name: newAssetName,
-      category: newAssetCategory || categories[0]?.name || 'Electronics',
-      serialNumber: newAssetSerial || `SN-${Math.floor(100000 + Math.random() * 900000)}`,
-      acquisitionDate: newAssetDate,
-      acquisitionCost: parseFloat(newAssetCost) || 0.0,
-      condition: newAssetCondition,
+      icon: newAssetCategory === 'Networking' ? 'router' : newAssetCategory === 'Furniture' ? 'chair' : 'laptop_mac',
+      category: newAssetCategory,
+      assignedTo: '',
+      avatar: '',
+      dept: 'Engineering',
+      status: 'In Storage',
+      condition: 'New',
       location: newAssetLocation,
-      photo: photoUrl,
-      shared: newAssetShared,
-      categoryFields: newAssetCategoryFields
-    });
+      lifecycle: 100,
+      serial: newAssetSerial || `SN-${Math.floor(100000 + Math.random() * 900000)}`,
+      purchaseDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }),
+      warrantyEnds: 'Jul 12, 2029',
+      value: '$1,500.00',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNINNudG-NFbPlNeUDyCO2BZovgEtRV6o-9xyMMu1icxAdyn_hz-6HliOQWP-pFDhLv-MsJrl8ft0FxZrmjUAMjIKzrNi9ghmkTIiXrWkrQsh6nFsIlMFHzf-psUrhmvjSgZKJH4CQsonO3IpvxyCL4F2LOrY2gDCYYP3vFtvWJLUQgucwFBiod8O7x97qb-pJxK61vdxrLFglf-cMgPmKboMbK-GFlwYm58nN6xM8KaIBfmy6snlAiFQGvCU2uzPM0uE2YhT0DcsU'
+    };
 
+    setAssets([newAsset, ...assets]);
     setIsCreateOpen(false);
-    resetRegisterForm();
-  };
-
-  const resetRegisterForm = () => {
     setNewAssetName('');
-    setNewAssetCategory('');
-    setNewAssetLocation('San Francisco');
     setNewAssetSerial('');
-    setNewAssetCost('');
-    setNewAssetDate(new Date().toISOString().split('T')[0]);
-    setNewAssetCondition('New');
-    setNewAssetPhoto('');
-    setNewAssetShared(false);
-    setNewAssetCategoryFields({});
-  };
-
-  // QR scanner simulator
-  const startQrScan = () => {
-    setIsQrScanning(true);
-    setQrResultMsg('Scanning QR codes on hardware tag label...');
-    setTimeout(() => {
-      // Find a random asset or match first
-      if (assets.length > 0) {
-        const randomAsset = assets[Math.floor(Math.random() * assets.length)];
-        setQrResultMsg(`QR Match Found! Tag: ${randomAsset.tag} (${randomAsset.name})`);
-        setTimeout(() => {
-          setIsQrScanning(false);
-          setSearchQuery(randomAsset.tag);
-        }, 1500);
-      } else {
-        setQrResultMsg('No assets registered to scan.');
-        setTimeout(() => setIsQrScanning(false), 1500);
-      }
-    }, 2000);
   };
 
   // Filter Logic
   const filteredAssets = assets.filter(asset => {
-    const query = searchQuery.toLowerCase().trim();
-    const matchesSearch = asset.name.toLowerCase().includes(query) || 
-                          asset.tag.toLowerCase().includes(query) || 
-                          asset.serialNumber.toLowerCase().includes(query);
+    const matchesSearch = asset.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          asset.tag.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          asset.serial.toLowerCase().includes(searchQuery.toLowerCase());
                           
     const matchesCategory = selectedCategory === 'All Categories' || asset.category === selectedCategory;
+    const matchesDept = selectedDept === 'All Departments' || asset.dept === selectedDept;
     const matchesStatus = selectedStatus === 'All Status' || asset.status === selectedStatus;
-    const matchesLoc = selectedLoc === 'Global Locations' || asset.location.includes(selectedLoc);
+    const matchesLoc = selectedLoc === 'Global Locations' || asset.location.includes(selectedLoc) || (selectedLoc === 'Remote' && asset.location === 'Remote');
 
-    return matchesSearch && matchesCategory && matchesStatus && matchesLoc;
+    return matchesSearch && matchesCategory && matchesDept && matchesStatus && matchesLoc;
   });
 
   const isAdminOrManager = userRole === 'Admin' || userRole === 'Asset Manager';
-
-  // Get active asset categories from context
-  const uniqueCategories = categories.map(c => c.name);
-
-  // Get unique locations
-  const locationsList = ['San Francisco', 'London Hub', 'Remote', 'HQ - Floor 4'];
 
   return (
     <div className="p-8 pb-24 transition-colors duration-300">
@@ -147,30 +150,24 @@ function AssetsManagement() {
       {/* Header section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
-          <h2 className="font-headline-md text-headline-md font-bold text-on-surface mb-1">Asset Directory</h2>
+          <h2 className="font-headline-md text-headline-md font-bold text-on-surface mb-1">Asset Inventory</h2>
           <p className="font-body-md text-body-md text-on-surface-variant">
-            Manage and track {filteredAssets.length} enterprise assets across global operations.
+            Manage and track {filteredAssets.length} enterprise assets across global networks.
           </p>
         </div>
         
         <div className="flex items-center gap-3">
-          <button 
-            onClick={() => {
-              const csvContent = "data:text/csv;charset=utf-8," 
-                + ["Tag,Name,Category,Serial,Status,Condition,Location,Cost"].join(",") + "\n"
-                + assets.map(a => `"${a.tag}","${a.name}","${a.category}","${a.serialNumber}","${a.status}","${a.condition}","${a.location}",${a.acquisitionCost}`).join("\n");
-              const encodedUri = encodeURI(csvContent);
-              const link = document.createElement("a");
-              link.setAttribute("href", encodedUri);
-              link.setAttribute("download", "AssetFlow_Inventory.csv");
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-surface-container-low border border-outline-variant/60 rounded-lg text-label-md font-label-md hover:bg-surface-bright transition-all font-semibold active:scale-95 shadow-sm"
-          >
+          <div className="bg-surface-container-low p-1 rounded-lg border border-outline-variant/60 flex">
+            <button className="p-2 bg-surface-container-highest text-primary rounded-md shadow-sm">
+              <span className="material-symbols-outlined">grid_view</span>
+            </button>
+            <button className="p-2 text-on-surface-variant hover:text-on-surface rounded-md">
+              <span className="material-symbols-outlined">list</span>
+            </button>
+          </div>
+          <button className="flex items-center gap-2 px-4 py-2 bg-surface-container-low border border-outline-variant/60 rounded-lg text-label-md font-label-md hover:bg-surface-bright transition-all font-semibold active:scale-95 shadow-sm">
             <span className="material-symbols-outlined text-[18px]">file_download</span>
-            Export CSV
+            Export
           </button>
         </div>
       </div>
@@ -189,22 +186,13 @@ function AssetsManagement() {
             className="w-full bg-surface-container border border-outline-variant/60 rounded-lg pl-10 pr-4 py-2.5 text-body-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all duration-200"
           />
         </div>
-        <button 
-          onClick={startQrScan}
-          className="flex items-center justify-center gap-2 bg-surface-container-highest px-4 py-2.5 rounded-lg border border-outline-variant/60 hover:bg-surface-bright transition-all active:scale-95 text-sm font-semibold shrink-0"
-        >
+        <button className="flex items-center justify-center gap-2 bg-surface-container-highest px-4 py-2.5 rounded-lg border border-outline-variant/60 hover:bg-surface-bright transition-all active:scale-95 text-sm font-semibold shrink-0">
           <span className="material-symbols-outlined text-[20px]">qr_code_scanner</span>
-          QR Tag Simulator
+          QR Search
         </button>
         {isAdminOrManager && (
           <button 
-            onClick={() => {
-              resetRegisterForm();
-              if (categories.length > 0) {
-                handleCategorySelectChange(categories[0].name);
-              }
-              setIsCreateOpen(true);
-            }}
+            onClick={() => setIsCreateOpen(true)}
             className="bg-primary hover:brightness-110 text-on-primary px-6 py-2.5 rounded-lg font-label-md text-label-md font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all active:scale-95 shrink-0"
           >
             <span className="material-symbols-outlined text-[20px]">add</span>
@@ -214,18 +202,32 @@ function AssetsManagement() {
       </div>
 
       {/* Filters Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 bg-surface-container/30 p-4 rounded-xl border border-outline-variant/40">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 bg-surface-container/30 p-4 rounded-xl border border-outline-variant/40">
         <div className="flex flex-col gap-1.5">
           <label className="font-label-sm text-label-sm text-on-surface-variant px-1 font-semibold">Category</label>
           <select 
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="bg-surface-container border border-outline-variant/60 rounded-lg px-3 py-2 text-body-sm focus:border-primary outline-none font-semibold text-on-surface"
+            className="bg-surface-container border border-outline-variant/60 rounded-lg px-3 py-2 text-body-sm focus:border-primary outline-none"
           >
             <option>All Categories</option>
-            {uniqueCategories.map((c, i) => (
-              <option key={i} value={c}>{c}</option>
-            ))}
+            <option>Computing</option>
+            <option>Furniture</option>
+            <option>Networking</option>
+            <option>Office Equipment</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="font-label-sm text-label-sm text-on-surface-variant px-1 font-semibold">Department</label>
+          <select 
+            value={selectedDept}
+            onChange={(e) => setSelectedDept(e.target.value)}
+            className="bg-surface-container border border-outline-variant/60 rounded-lg px-3 py-2 text-body-sm focus:border-primary outline-none"
+          >
+            <option>All Departments</option>
+            <option>Engineering</option>
+            <option>HR & Admin</option>
+            <option>Design</option>
           </select>
         </div>
         <div className="flex flex-col gap-1.5">
@@ -233,16 +235,12 @@ function AssetsManagement() {
           <select 
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="bg-surface-container border border-outline-variant/60 rounded-lg px-3 py-2 text-body-sm focus:border-primary outline-none font-semibold text-on-surface"
+            className="bg-surface-container border border-outline-variant/60 rounded-lg px-3 py-2 text-body-sm focus:border-primary outline-none"
           >
             <option>All Status</option>
-            <option value="Available">Available</option>
-            <option value="Allocated">Allocated</option>
-            <option value="Reserved">Reserved</option>
-            <option value="Under Maintenance">Under Maintenance</option>
-            <option value="Lost">Lost</option>
-            <option value="Retired">Retired</option>
-            <option value="Disposed">Disposed</option>
+            <option>Active</option>
+            <option>In Storage</option>
+            <option>Repairing</option>
           </select>
         </div>
         <div className="flex flex-col gap-1.5">
@@ -250,12 +248,12 @@ function AssetsManagement() {
           <select 
             value={selectedLoc}
             onChange={(e) => setSelectedLoc(e.target.value)}
-            className="bg-surface-container border border-outline-variant/60 rounded-lg px-3 py-2 text-body-sm focus:border-primary outline-none font-semibold text-on-surface"
+            className="bg-surface-container border border-outline-variant/60 rounded-lg px-3 py-2 text-body-sm focus:border-primary outline-none"
           >
             <option>Global Locations</option>
-            {locationsList.map((loc, i) => (
-              <option key={i} value={loc}>{loc}</option>
-            ))}
+            <option>San Francisco</option>
+            <option>London Hub</option>
+            <option>Remote</option>
           </select>
         </div>
       </div>
@@ -273,14 +271,14 @@ function AssetsManagement() {
                 <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Status</th>
                 <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Condition</th>
                 <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Location</th>
-                <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Bookable</th>
+                <th className="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Lifecycle</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-outline-variant/40 font-semibold">
+            <tbody className="divide-y divide-outline-variant/40">
               {filteredAssets.length > 0 ? (
                 filteredAssets.map((asset) => (
                   <tr 
-                    key={asset.id} 
+                    key={asset.tag} 
                     onClick={() => handleRowClick(asset)}
                     className="hover:bg-surface-bright/40 cursor-pointer transition-colors"
                   >
@@ -288,9 +286,7 @@ function AssetsManagement() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center border border-outline-variant/30 text-on-surface-variant">
-                          <span className="material-symbols-outlined text-[18px]">
-                            {asset.category === 'Networking' ? 'router' : asset.category === 'Furniture' ? 'chair' : 'laptop_mac'}
-                          </span>
+                          <span className="material-symbols-outlined text-[18px]">{asset.icon}</span>
                         </div>
                         <span className="font-body-sm font-bold text-on-surface">{asset.name}</span>
                       </div>
@@ -299,21 +295,26 @@ function AssetsManagement() {
                     <td className="px-6 py-4">
                       {asset.assignedTo ? (
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold flex items-center justify-center">
-                            {asset.assignedTo.split(' ').map(n=>n[0]).join('')}
-                          </div>
+                          {asset.avatar ? (
+                            <img className="w-6 h-6 rounded-full object-cover border border-outline-variant/40" src={asset.avatar} alt={asset.assignedTo} />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold flex items-center justify-center">
+                              {asset.assignedTo.split(' ').map(n=>n[0]).join('')}
+                            </div>
+                          )}
                           <span className="text-body-sm text-on-surface font-medium">{asset.assignedTo}</span>
                         </div>
                       ) : (
-                        <span className="text-body-sm text-on-surface-variant/60 italic font-medium">Unassigned (In Storage)</span>
+                        <span className="text-body-sm text-on-surface-variant/60 italic font-medium">Unassigned</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 text-[11px] font-bold rounded-full uppercase tracking-wider border ${
-                        asset.status === 'Available' ? 'bg-primary/10 border-primary/20 text-primary' :
-                        asset.status === 'Allocated' ? 'bg-secondary-container/20 border-secondary-container/20 text-secondary' :
-                        asset.status === 'Under Maintenance' ? 'bg-tertiary-container/20 border-tertiary-container/20 text-tertiary' :
-                        'bg-error/15 border-error/30 text-error'
+                        asset.status === 'Active' 
+                          ? 'bg-primary/10 border-primary/20 text-primary' 
+                          : asset.status === 'In Storage' 
+                          ? 'bg-secondary-container/10 border-secondary-container/20 text-secondary' 
+                          : 'bg-tertiary-container/10 border-tertiary-container/20 text-tertiary'
                       }`}>
                         {asset.status}
                       </span>
@@ -321,19 +322,23 @@ function AssetsManagement() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1.5">
                         <span className={`w-2 h-2 rounded-full ${
-                          asset.condition === 'Excellent' || asset.condition === 'New' ? 'bg-primary' :
-                          asset.condition === 'Good' ? 'bg-secondary' : 'bg-tertiary'
+                          asset.condition === 'Excellent' || asset.condition === 'New' 
+                            ? 'bg-primary' 
+                            : asset.condition === 'Good' 
+                            ? 'bg-secondary' 
+                            : 'bg-tertiary'
                         }`}></span>
                         <span className="text-body-sm text-on-surface font-medium">{asset.condition}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-body-sm text-on-surface-variant font-medium">{asset.location}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-0.5 rounded text-[10px] border font-bold uppercase tracking-wider ${
-                        asset.shared ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-outline-variant/20 border-outline-variant text-on-surface-variant'
-                      }`}>
-                        {asset.shared ? 'Shared' : 'Private'}
-                      </span>
+                      <div className="w-full bg-surface-container-highest/60 h-1.5 rounded-full overflow-hidden max-w-[80px] border border-outline-variant/10">
+                        <div 
+                          className={`h-full rounded-full ${asset.lifecycle > 50 ? 'bg-primary' : 'bg-tertiary'}`} 
+                          style={{ width: `${asset.lifecycle}%` }}
+                        ></div>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -347,17 +352,45 @@ function AssetsManagement() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        <div className="px-6 py-4 bg-surface-container border-t border-outline-variant/60 flex items-center justify-between">
+          <p className="text-label-sm text-on-surface-variant font-medium">
+            Showing <span className="font-bold text-on-surface">1 - {filteredAssets.length}</span> of {filteredAssets.length} items
+          </p>
+          <div className="flex gap-2">
+            <button className="p-2 border border-outline-variant/60 rounded-lg hover:bg-surface-bright text-on-surface-variant disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+            <button className="py-1 px-3 border border-primary/30 bg-primary/10 text-primary rounded-lg text-xs font-bold shadow-sm">
+              1
+            </button>
+            <button className="p-2 border border-outline-variant/60 rounded-lg hover:bg-surface-bright text-on-surface-variant">
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Asset Detail Drawer Overlay */}
       {isDrawerOpen && selectedAsset && (
         <div className="fixed inset-0 z-50 flex justify-end">
-          <div onClick={() => setIsDrawerOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"></div>
+          {/* Backdrop */}
+          <div 
+            onClick={() => setIsDrawerOpen(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
+          ></div>
+          
+          {/* Sliding Panel */}
           <div className="relative w-full max-w-xl bg-surface-container-high border-l border-outline-variant h-screen shadow-2xl flex flex-col z-10 animate-slide-in-right">
             
-            <div className="flex items-center justify-between p-6 border-b border-outline-variant/60 bg-surface-container-high">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-outline-variant/60">
               <div className="flex items-center gap-4">
-                <button onClick={() => setIsDrawerOpen(false)} className="p-2 hover:bg-surface-bright rounded-full text-on-surface-variant hover:text-on-surface">
+                <button 
+                  onClick={() => setIsDrawerOpen(false)}
+                  className="p-2 hover:bg-surface-bright rounded-full text-on-surface-variant hover:text-on-surface transition-colors"
+                >
                   <span className="material-symbols-outlined">close</span>
                 </button>
                 <div>
@@ -365,18 +398,24 @@ function AssetsManagement() {
                   <p className="text-label-sm text-primary font-code uppercase tracking-wider font-semibold">{selectedAsset.tag}</p>
                 </div>
               </div>
+              
+              <div className="flex gap-2">
+                <button className="p-2 hover:bg-surface-bright rounded-lg text-on-surface-variant hover:text-on-surface"><span className="material-symbols-outlined">edit</span></button>
+                <button className="p-2 hover:bg-surface-bright rounded-lg text-on-surface-variant hover:text-on-surface"><span className="material-symbols-outlined">more_vert</span></button>
+              </div>
             </div>
 
+            {/* Scrollable details */}
             <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
               
-              {/* Asset Hero Image */}
+              {/* Asset Hero Image / Tag banner */}
               <div className="relative w-full h-48 rounded-xl overflow-hidden shadow-md">
-                <img className="w-full h-full object-cover" src={selectedAsset.photo} alt={selectedAsset.name} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex items-end p-4">
+                <img className="w-full h-full object-cover" src={selectedAsset.image} alt={selectedAsset.name} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-4">
                   <div>
                     <h4 className="text-white font-bold text-headline-sm leading-tight">{selectedAsset.name}</h4>
-                    <p className="text-primary text-label-md font-semibold mt-1">
-                      {selectedAsset.assignedTo ? `Currently held by ${selectedAsset.assignedTo}` : 'In Storage (Available)'}
+                    <p className="text-primary text-label-md font-medium mt-1">
+                      {selectedAsset.assignedTo ? `Assigned to ${selectedAsset.assignedTo}` : 'Unassigned (In Storage)'}
                     </p>
                   </div>
                 </div>
@@ -389,7 +428,9 @@ function AssetsManagement() {
                     key={t}
                     onClick={() => setDrawerTab(t)}
                     className={`px-5 py-2.5 font-label-md text-label-md border-b-2 font-semibold transition-all ${
-                      drawerTab === t ? 'text-primary border-primary' : 'text-on-surface-variant hover:text-on-surface border-transparent'
+                      drawerTab === t 
+                        ? 'text-primary border-primary' 
+                        : 'text-on-surface-variant hover:text-on-surface border-transparent'
                     }`}
                   >
                     {t}
@@ -399,291 +440,174 @@ function AssetsManagement() {
 
               {/* Tab Panels */}
               {drawerTab === 'Overview' && (
-                <div className="space-y-6 animate-fade-in font-semibold">
+                <div className="space-y-6 animate-fade-in">
                   <div className="grid grid-cols-2 gap-6 bg-surface-container rounded-xl p-6 border border-outline-variant/30">
                     <div>
-                      <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Serial Number</p>
-                      <p className="font-code text-on-surface font-bold">{selectedAsset.serialNumber}</p>
+                      <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 font-semibold">Serial Number</p>
+                      <p className="font-code text-on-surface font-bold">{selectedAsset.serial}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Category</p>
-                      <p className="text-on-surface">{selectedAsset.category}</p>
+                      <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 font-semibold">Purchase Date</p>
+                      <p className="font-body-md text-on-surface font-semibold">{selectedAsset.purchaseDate}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Acquisition Date</p>
-                      <p className="text-on-surface">{selectedAsset.acquisitionDate}</p>
+                      <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 font-semibold">Warranty Ends</p>
+                      <p className="font-body-md text-on-surface font-semibold">{selectedAsset.warrantyEnds}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Acquisition Value</p>
-                      <p className="text-on-surface font-bold text-primary">${selectedAsset.acquisitionCost?.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Physical Condition</p>
-                      <p className="text-on-surface">{selectedAsset.condition}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Current Location</p>
-                      <p className="text-on-surface">{selectedAsset.location}</p>
+                      <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 font-semibold">Value (USD)</p>
+                      <p className="font-body-md text-on-surface font-semibold">{selectedAsset.value}</p>
                     </div>
                   </div>
 
-                  {/* Category specific attributes */}
-                  {selectedAsset.categoryFields && Object.keys(selectedAsset.categoryFields).length > 0 && (
-                    <div className="bg-surface-container/60 border border-outline-variant/30 rounded-xl p-6 space-y-4">
-                      <h4 className="text-xs uppercase font-bold tracking-wider text-on-surface-variant border-b border-outline-variant/40 pb-2">Category-Specific Attributes</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        {Object.entries(selectedAsset.categoryFields).map(([key, val]) => (
-                          <div key={key}>
-                            <p className="text-[10px] text-on-surface-variant uppercase mb-0.5">{key}</p>
-                            <p className="text-xs text-on-surface font-bold">{val || '—'}</p>
-                          </div>
-                        ))}
-                      </div>
+                  <div className="p-4 bg-surface-container rounded-xl border border-outline-variant/30">
+                    <h5 className="font-label-md text-label-md font-bold text-on-surface mb-2">Category Taxonomy</h5>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-[11px] px-2.5 py-1 rounded bg-primary/10 text-primary border border-primary/20 font-bold">{selectedAsset.category}</span>
+                      <span className="text-[11px] px-2.5 py-1 rounded bg-secondary-container/10 text-secondary border border-secondary/20 font-bold">Location: {selectedAsset.location}</span>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
 
               {drawerTab === 'Timeline' && (
-                <div className="space-y-6 animate-fade-in pl-4 relative before:content-[''] before:absolute before:left-6 before:top-2 before:bottom-2 before:w-[1px] before:bg-outline-variant/40 font-semibold">
-                  {selectedAsset.history?.map((hist, idx) => (
-                    <div key={idx} className="relative pl-8">
-                      <div className="absolute left-1.5 top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-surface-container-high"></div>
-                      <p className="text-xs font-bold text-on-surface">{hist.action}</p>
-                      <p className="text-[11px] text-on-surface-variant mt-0.5">{hist.notes}</p>
-                      <div className="flex gap-4 mt-2 text-[10px] text-primary/75">
-                        <span>User: {hist.user}</span>
-                        <span>Date: {hist.date}</span>
-                      </div>
+                <div className="space-y-4 animate-fade-in relative before:absolute before:left-[11px] before:top-2 before:bottom-0 before:w-0.5 before:bg-outline-variant/60 pl-2">
+                  <div className="flex gap-4 relative pl-4">
+                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center z-10 shrink-0 border border-surface shadow-sm">
+                      <span className="material-symbols-outlined text-[14px] text-on-primary font-bold">check</span>
                     </div>
-                  ))}
+                    <div>
+                      <p className="font-label-md text-label-md font-bold text-on-surface">Physical Audit Completed</p>
+                      <p className="text-xs text-on-surface-variant">Audit by Sarah Miller • 2 days ago</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 relative pl-4">
+                    <div className="w-6 h-6 rounded-full bg-surface border-2 border-outline-variant/60 flex items-center justify-center z-10 shrink-0 shadow-sm"></div>
+                    <div>
+                      <p className="font-label-md text-label-md font-bold text-on-surface">Software Update Pushed</p>
+                      <p className="text-xs text-on-surface-variant">macOS Sonoma 14.4 • Mar 15, 2024</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 relative pl-4">
+                    <div className="w-6 h-6 rounded-full bg-surface border-2 border-outline-variant/60 flex items-center justify-center z-10 shrink-0 shadow-sm"></div>
+                    <div>
+                      <p className="font-label-md text-label-md font-bold text-on-surface">Asset Allocated</p>
+                      <p className="text-xs text-on-surface-variant">Allocation Request #882 • Jan 15, 2024</p>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {drawerTab === 'Maintenance' && (
-                <div className="space-y-4 animate-fade-in font-semibold">
-                  {tickets.filter(t => t.assetName === selectedAsset.name).length === 0 ? (
-                    <p className="text-xs text-on-surface-variant italic p-4 text-center">No maintenance incidents reported for this asset.</p>
-                  ) : (
-                    tickets.filter(t => t.assetName === selectedAsset.name).map((ticket, index) => (
-                      <div key={index} className="bg-surface-container border border-outline-variant/50 p-4 rounded-xl space-y-2">
-                        <div className="flex justify-between items-center">
-                          <p className="text-xs font-bold text-on-surface">{ticket.title}</p>
-                          <span className={`text-[9px] uppercase px-2 py-0.5 rounded font-bold border ${
-                            ticket.status === 'Resolved' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-tertiary-container/10 border-tertiary-container text-tertiary'
-                          }`}>{ticket.status}</span>
-                        </div>
-                        <p className="text-[11px] text-on-surface-variant">{ticket.desc}</p>
-                        <p className="text-[10px] text-primary/80">Reported: {ticket.date} • Assignee: {ticket.assignee}</p>
+                <div className="space-y-4 animate-fade-in">
+                  <div className="p-4 bg-surface-container rounded-xl border border-outline-variant/30 flex items-start gap-4">
+                    <div className="p-2.5 bg-error/10 border border-error/20 rounded-xl text-error">
+                      <span className="material-symbols-outlined">build</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <p className="font-label-md text-label-md font-bold text-on-surface">Hardware Diagnostic Check</p>
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 font-bold uppercase">Completed</span>
                       </div>
-                    ))
-                  )}
+                      <p className="text-xs text-on-surface-variant mt-1">Preventative battery diagnostic check. Passed diagnostic scans.</p>
+                      <p className="text-[10px] text-on-surface-variant/60 mt-3 font-semibold uppercase">Feb 20, 2024 • External Provider</p>
+                    </div>
+                  </div>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* QR Scanning Simulator Modal */}
-      {isQrScanning && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/75 backdrop-blur-sm"></div>
-          <div className="bg-surface-container-high border border-outline-variant rounded-2xl w-full max-w-[360px] p-8 text-center relative z-10 animate-fade-in">
-            <div className="w-48 h-48 border-2 border-primary/60 rounded-xl mx-auto mb-6 flex items-center justify-center relative overflow-hidden bg-surface-container-lowest">
-              <span className="material-symbols-outlined text-6xl text-primary animate-pulse">qr_code</span>
-              {/* Scanline animation */}
-              <div className="absolute left-0 right-0 h-0.5 bg-primary/80 animate-scanline"></div>
             </div>
-            <h4 className="font-bold text-on-surface mb-2">Simulating QR Scanner</h4>
-            <p className="text-xs text-on-surface-variant font-semibold animate-pulse">{qrResultMsg}</p>
-          </div>
-        </div>
-      )}
 
-      {/* Asset Creation Modal Drawer */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
-          <div onClick={() => setIsCreateOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"></div>
-          <div className="relative w-full max-w-md bg-surface-container-low border-l border-outline-variant h-screen shadow-2xl z-10 flex flex-col animate-slide-in-right">
-            
-            <div className="p-6 border-b border-outline-variant/60 flex justify-between items-center bg-surface-container-high">
-              <div>
-                <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">Register Asset</h3>
-                <p className="text-xs text-on-surface-variant font-medium">Add new hardware inventory tag definitions.</p>
-              </div>
-              <button onClick={() => setIsCreateOpen(false)} className="p-2 hover:bg-surface-bright rounded-full text-on-surface-variant hover:text-on-surface">
-                <span className="material-symbols-outlined">close</span>
+            {/* Footer */}
+            <div className="p-6 border-t border-outline-variant bg-surface-container-high/90 backdrop-blur-md flex gap-3">
+              {isAdminOrManager && (
+                <button className="flex-1 py-3 bg-primary text-on-primary font-bold rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-md">
+                  Allocate Asset
+                </button>
+              )}
+              <button className="flex-1 py-3 border border-outline-variant hover:border-primary rounded-xl font-bold hover:bg-surface-bright transition-all active:scale-95">
+                Print QR Tag
               </button>
             </div>
-
-            <form onSubmit={handleRegisterSubmit} className="flex-1 flex flex-col h-full overflow-hidden">
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar font-semibold">
-                
-                {/* Asset Name */}
-                <div>
-                  <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1.5 block">Asset Name</label>
-                  <input 
-                    type="text" 
-                    value={newAssetName}
-                    onChange={(e) => setNewAssetName(e.target.value)}
-                    placeholder="e.g. Dell XPS Workstation 8960"
-                    required
-                    className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none"
-                  />
-                </div>
-
-                {/* Category Selection */}
-                <div>
-                  <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1.5 block">Category</label>
-                  <select 
-                    value={newAssetCategory}
-                    onChange={(e) => handleCategorySelectChange(e.target.value)}
-                    required
-                    className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none text-on-surface font-semibold"
-                  >
-                    <option value="">Select Category...</option>
-                    {categories.map((c, i) => (
-                      <option key={i} value={c.name}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Serial Number */}
-                <div>
-                  <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1.5 block">Serial Number</label>
-                  <input 
-                    type="text" 
-                    value={newAssetSerial}
-                    onChange={(e) => setNewAssetSerial(e.target.value)}
-                    placeholder="e.g. SN-9012-AX77"
-                    required
-                    className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none font-code font-bold"
-                  />
-                </div>
-
-                {/* Acquisition Date & Cost */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1.5 block">Acquisition Date</label>
-                    <input 
-                      type="date" 
-                      value={newAssetDate}
-                      onChange={(e) => setNewAssetDate(e.target.value)}
-                      required
-                      className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none text-on-surface"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1.5 block">Acquisition Cost ($)</label>
-                    <input 
-                      type="number" 
-                      step="0.01"
-                      value={newAssetCost}
-                      onChange={(e) => setNewAssetCost(e.target.value)}
-                      placeholder="e.g. 1499.00"
-                      required
-                      className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Condition & Location */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1.5 block">Initial Condition</label>
-                    <select 
-                      value={newAssetCondition}
-                      onChange={(e) => setNewAssetCondition(e.target.value)}
-                      className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none text-on-surface"
-                    >
-                      <option value="New">New</option>
-                      <option value="Excellent">Excellent</option>
-                      <option value="Good">Good</option>
-                      <option value="Fair">Fair</option>
-                      <option value="Poor">Poor</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1.5 block">Location</label>
-                    <select 
-                      value={newAssetLocation}
-                      onChange={(e) => setNewAssetLocation(e.target.value)}
-                      className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none text-on-surface"
-                    >
-                      {locationsList.map((loc, i) => (
-                        <option key={i} value={loc}>{loc}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Photo / Document URL */}
-                <div>
-                  <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1.5 block">Photo URL (Optional)</label>
-                  <input 
-                    type="url" 
-                    value={newAssetPhoto}
-                    onChange={(e) => setNewAssetPhoto(e.target.value)}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none text-xs"
-                  />
-                </div>
-
-                {/* Bookable Flag */}
-                <div className="flex items-center gap-3 bg-surface-container p-4 rounded-xl border border-outline-variant/40">
-                  <input 
-                    type="checkbox" 
-                    id="sharedBookable"
-                    checked={newAssetShared}
-                    onChange={(e) => setNewAssetShared(e.target.checked)}
-                    className="w-5 h-5 cursor-pointer accent-primary"
-                  />
-                  <div>
-                    <label htmlFor="sharedBookable" className="text-xs font-bold text-on-surface cursor-pointer select-none">Mark as Shared / Bookable</label>
-                    <p className="text-[10px] text-on-surface-variant font-medium">Shared assets can be booked by employees via the Resource Booking calendar.</p>
-                  </div>
-                </div>
-
-                {/* Dynamic Category fields */}
-                {newAssetCategory && Object.keys(newAssetCategoryFields).length > 0 && (
-                  <div className="p-4 bg-surface-container/60 border border-outline-variant/40 rounded-xl space-y-4">
-                    <h4 className="text-xs uppercase font-bold tracking-wider text-primary border-b border-primary/20 pb-2">Category-Specific Fields</h4>
-                    {Object.keys(newAssetCategoryFields).map((field, idx) => (
-                      <div key={idx}>
-                        <label className="text-[10px] text-on-surface-variant font-bold block mb-1">{field}</label>
-                        <input 
-                          type="text" 
-                          value={newAssetCategoryFields[field]}
-                          onChange={(e) => handleCategoryFieldChange(field, e.target.value)}
-                          placeholder={`Enter ${field.toLowerCase()}...`}
-                          required
-                          className="w-full bg-surface border border-outline-variant/60 rounded-lg px-3 py-2 text-xs focus:border-primary outline-none text-on-surface"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-              </div>
-
-              <div className="p-6 border-t border-outline-variant/60 bg-surface-container-high flex gap-3 flex-shrink-0">
-                <button 
-                  type="submit" 
-                  className="flex-1 py-3 bg-primary text-on-primary font-bold rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-md"
-                >
-                  Register Asset
-                </button>
-                <button 
-                  type="button" 
-                  onClick={() => setIsCreateOpen(false)}
-                  className="px-6 py-3 border border-outline-variant rounded-xl font-bold hover:bg-surface-bright transition-all active:scale-95 text-on-surface-variant hover:text-on-surface"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
           </div>
+        </div>
+      )}
+
+      {/* Asset Creation Drawer Modal */}
+      {isCreateOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsCreateOpen(false)}></div>
+          <form 
+            onSubmit={handleRegisterAsset}
+            className="bg-surface-container-high w-full max-w-md rounded-2xl border border-outline-variant/60 p-6 z-10 shadow-2xl relative animate-fade-in"
+          >
+            <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-4">Register New Asset</h3>
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1 block">Asset Name</label>
+                <input 
+                  type="text" 
+                  value={newAssetName}
+                  onChange={(e) => setNewAssetName(e.target.value)}
+                  placeholder="e.g. ThinkPad P1 Gen 5"
+                  required
+                  className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1 block">Category</label>
+                <select 
+                  value={newAssetCategory}
+                  onChange={(e) => setNewAssetCategory(e.target.value)}
+                  className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none"
+                >
+                  <option>Computing</option>
+                  <option>Furniture</option>
+                  <option>Networking</option>
+                  <option>Office Equipment</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1 block">Location</label>
+                <select 
+                  value={newAssetLocation}
+                  onChange={(e) => setNewAssetLocation(e.target.value)}
+                  className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none"
+                >
+                  <option>San Francisco</option>
+                  <option>London Hub</option>
+                  <option>Remote</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1 block">Serial Number</label>
+                <input 
+                  type="text" 
+                  value={newAssetSerial}
+                  onChange={(e) => setNewAssetSerial(e.target.value)}
+                  placeholder="e.g. SN-8829-1029"
+                  className="w-full bg-surface border border-outline-variant/60 rounded-xl px-4 py-2.5 text-sm focus:border-primary outline-none"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button 
+                type="submit" 
+                className="flex-1 py-3 bg-primary text-on-primary font-bold rounded-xl hover:brightness-110 transition-all shadow-md active:scale-95"
+              >
+                Register
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setIsCreateOpen(false)}
+                className="flex-1 py-3 border border-outline-variant rounded-xl font-bold hover:bg-surface-bright transition-all active:scale-95"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       )}
 

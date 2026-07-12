@@ -19,6 +19,12 @@ public class BookingController {
 
     private final BookingService bookingService;
 
+    @GetMapping
+    @Operation(summary = "Get list of all bookings")
+    public ResponseEntity<List<BookingDto>> getAllBookings() {
+        return ResponseEntity.ok(bookingService.getAllBookings());
+    }
+
     @PostMapping
     @Operation(summary = "Create a booking for a resource (checks for slot overlaps)")
     public ResponseEntity<BookingDto> createBooking(@Valid @RequestBody BookingDto.Create request) {

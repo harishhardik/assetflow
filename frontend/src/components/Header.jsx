@@ -1,9 +1,7 @@
-import React, { useState, useContext } from 'react';
-import { AppContext } from '../context/AppContext';
+import React, { useState } from 'react';
 
 function Header({ theme, setTheme, userRole, currentView }) {
   const [showNotifications, setShowNotifications] = useState(false);
-  const { notifications, clearNotifications } = useContext(AppContext);
 
   // Formatter for view titles
   const getViewTitle = () => {
@@ -20,16 +18,17 @@ function Header({ theme, setTheme, userRole, currentView }) {
         return 'Resource Booking';
       case 'maintenance':
         return 'Maintenance Board';
-      case 'audit':
-        return 'Asset Audit';
-      case 'reports':
-        return 'Reports & Analytics';
-      case 'logs':
-        return 'Activity Logs';
       default:
         return 'AssetFlow';
     }
   };
+
+  // Static mock notifications
+  const notifications = [
+    { id: 1, text: 'HVAC coolant leak in Server Room 102', time: '12 mins ago', unread: true, type: 'danger' },
+    { id: 2, text: 'MacBook Pro M2 return is due today', time: '1 hour ago', unread: true, type: 'warning' },
+    { id: 3, text: 'New transfer request approved', time: '4 hours ago', unread: false, type: 'info' }
+  ];
 
   return (
     <header className="flex justify-between items-center h-16 px-gutter w-full sticky top-0 z-30 bg-surface-container border-b border-outline-variant shadow-sm transition-colors duration-300">
@@ -79,9 +78,7 @@ function Header({ theme, setTheme, userRole, currentView }) {
             }`}
           >
             <span className="material-symbols-outlined">notifications</span>
-            {notifications.some(n => n.unread) && (
-              <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface-container"></span>
-            )}
+            <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface-container"></span>
           </button>
 
           {showNotifications && (
@@ -96,42 +93,32 @@ function Header({ theme, setTheme, userRole, currentView }) {
               <div className="absolute right-0 mt-2 w-80 bg-surface-container-high border border-outline-variant rounded-xl shadow-xl z-50 p-4 animate-fade-in">
                 <div className="flex justify-between items-center mb-3 pb-2 border-b border-outline-variant/60">
                   <h4 className="font-label-md text-label-md font-bold">Notifications</h4>
-                  {notifications.some(n => n.unread) && (
-                    <button 
-                      onClick={clearNotifications}
-                      className="text-xs text-primary hover:underline font-medium"
-                    >
-                      Mark all read
-                    </button>
-                  )}
+                  <button className="text-xs text-primary hover:underline font-medium">Mark all read</button>
                 </div>
-                <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
-                  {notifications.length === 0 ? (
-                    <p className="text-xs text-on-surface-variant text-center py-4">No notifications</p>
-                  ) : (
-                    notifications.map(n => (
-                      <div 
-                        key={n.id} 
-                        className={`p-3 rounded-lg border text-left cursor-pointer hover:bg-surface-bright transition-colors ${
-                          n.unread 
-                            ? 'bg-surface border-outline-variant/50' 
-                            : 'bg-transparent border-transparent opacity-75'
-                        }`}
-                      >
-                        <div className="flex justify-between items-start gap-2">
-                          <p className="text-body-sm text-on-surface leading-tight font-medium">
-                            {n.text}
-                          </p>
-                          {n.unread && (
-                            <span className={`w-2 h-2 rounded-full shrink-0 mt-1 ${
-                              n.type === 'danger' ? 'bg-error' : n.type === 'warning' ? 'bg-tertiary' : 'bg-primary'
-                            }`}></span>
-                          )}
-                        </div>
-                        <span className="text-[10px] text-on-surface-variant mt-2 block">{n.time}</span>
+                <div className="space-y-2">
+                  {notifications.map(n => (
+                    <div 
+                      key={n.id} 
+                      className={`p-3 rounded-lg border text-left cursor-pointer hover:bg-surface-bright transition-colors ${
+                        n.unread 
+                          ? 'bg-surface border-outline-variant/50' 
+                          : 'bg-transparent border-transparent opacity-75'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start gap-2">
+                        <p className="text-body-sm text-on-surface leading-tight font-medium">
+                          {n.text}
+                        </p>
+                        {n.type === 'danger' && (
+                          <span className="w-2 h-2 rounded-full bg-error shrink-0 mt-1"></span>
+                        )}
+                        {n.type === 'warning' && (
+                          <span className="w-2 h-2 rounded-full bg-tertiary-container shrink-0 mt-1"></span>
+                        )}
                       </div>
-                    ))
-                  )}
+                      <span className="text-[10px] text-on-surface-variant mt-2 block">{n.time}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </>
