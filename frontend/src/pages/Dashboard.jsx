@@ -1,4 +1,6 @@
 import React from 'react';
+import { AppContext } from '../context/AppContext';
+import Chatbot from "../components/Chatbot";
 
 function Dashboard({ userRole, setCurrentView }) {
   // Get display details based on role
@@ -24,7 +26,7 @@ function Dashboard({ userRole, setCurrentView }) {
 
   return (
     <div className="p-margin-page max-w-container-max mx-auto space-y-element-gap md:space-y-gutter pb-24 transition-colors duration-300">
-      
+
       {/* Hero Welcome & Greeting Section */}
       <section className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
@@ -37,7 +39,7 @@ function Dashboard({ userRole, setCurrentView }) {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {(isAdmin || isManager) && (
-            <button 
+            <button
               onClick={() => setCurrentView('assets')}
               className="flex items-center gap-2 bg-primary text-on-primary font-label-md text-label-md px-5 py-3 rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/10 active:scale-95"
             >
@@ -45,14 +47,14 @@ function Dashboard({ userRole, setCurrentView }) {
               Register Asset
             </button>
           )}
-          <button 
+          <button
             onClick={() => setCurrentView('booking')}
             className="flex items-center gap-2 border border-outline-variant hover:border-primary text-on-surface font-label-md text-label-md px-5 py-3 rounded-xl hover:bg-surface-container transition-all active:scale-95"
           >
             <span className="material-symbols-outlined text-[20px]">event_available</span>
             Book Resource
           </button>
-          <button 
+          <button
             onClick={() => setCurrentView('maintenance')}
             className="flex items-center gap-2 border border-outline-variant hover:border-primary text-on-surface font-label-md text-label-md px-5 py-3 rounded-xl hover:bg-surface-container transition-all active:scale-95"
           >
@@ -149,7 +151,7 @@ function Dashboard({ userRole, setCurrentView }) {
 
       {/* Main Grid: 50/50 Split filling the whole page */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-stretch">
-        
+
         {/* Left Column: Overdue Alerts */}
         <div className="glass-card rounded-xl flex flex-col justify-between">
           <div>
@@ -158,16 +160,16 @@ function Dashboard({ userRole, setCurrentView }) {
                 <span className="material-symbols-outlined text-error" style={{ fontVariationSettings: "'FILL' 1" }}>report</span>
                 <h4 className="font-headline-sm text-headline-sm font-bold text-on-surface">Overdue Alerts</h4>
               </div>
-              <button 
+              <button
                 onClick={() => setCurrentView('allocation')}
                 className="text-primary hover:text-primary-container font-label-md text-label-md hover:underline font-semibold"
               >
                 View All
               </button>
             </div>
-            
+
             <div className="divide-y divide-outline-variant/40">
-              
+
               {/* Alert Item 1 */}
               <div className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-container-low transition-colors cursor-pointer">
                 <div className="flex items-center gap-4">
@@ -240,7 +242,7 @@ function Dashboard({ userRole, setCurrentView }) {
           </div>
 
           <div className="p-6 border-t border-outline-variant/30 bg-surface-container/10">
-            <button 
+            <button
               onClick={() => setCurrentView('allocation')}
               className="w-full py-3 text-on-surface-variant hover:text-on-surface font-label-md text-label-md border border-outline-variant/60 rounded-xl hover:bg-surface-container transition-all font-bold active:scale-[0.98]"
             >
@@ -254,7 +256,7 @@ function Dashboard({ userRole, setCurrentView }) {
           <div>
             <h4 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-6">Recent Activity</h4>
             <div className="space-y-6 relative before:content-[''] before:absolute before:left-3 before:top-2 before:bottom-2 before:w-[1px] before:bg-outline-variant/60">
-              
+
               {/* Timeline Item 1 */}
               <div className="relative pl-8 animate-fade-in">
                 <div className="absolute left-1.5 top-1.5 w-3 h-3 rounded-full bg-primary ring-4 ring-surface"></div>
@@ -306,7 +308,7 @@ function Dashboard({ userRole, setCurrentView }) {
 
       {/* Dynamic Contextual FAB */}
       {(isAdmin || isManager) && (
-        <button 
+        <button
           onClick={() => setCurrentView('assets')}
           className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-xl shadow-primary/20 hover:scale-110 active:scale-95 transition-all z-40 group"
         >
@@ -316,6 +318,10 @@ function Dashboard({ userRole, setCurrentView }) {
           </span>
         </button>
       )}
+
+      {/* AI Chatbot */}
+      <Chatbot />
+
     </div>
   );
 }
