@@ -45,6 +45,13 @@ public class MaintenanceController {
         return ResponseEntity.ok(maintenanceService.approveRequest(id));
     }
 
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ASSET_MANAGER')")
+    @Operation(summary = "Reject a maintenance request (Admin/Asset Manager only)")
+    public ResponseEntity<MaintenanceDto> rejectRequest(@PathVariable Long id) {
+        return ResponseEntity.ok(maintenanceService.rejectRequest(id));
+    }
+
     @PutMapping("/{id}/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'ASSET_MANAGER')")
     @Operation(summary = "Assign a maintenance request to an employee (Admin/Asset Manager only)")

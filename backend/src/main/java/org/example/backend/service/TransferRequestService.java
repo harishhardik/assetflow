@@ -3,13 +3,16 @@ package org.example.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.dto.TransferRequestDto;
 import org.example.backend.entity.Asset;
+import org.example.backend.entity.AssetAllocation;
 import org.example.backend.entity.Department;
 import org.example.backend.entity.TransferRequest;
 import org.example.backend.entity.User;
 import org.example.backend.enums.TransferStatus;
+import org.example.backend.enums.AssetStatus;
 import org.example.backend.exception.ConflictException;
 import org.example.backend.exception.ResourceNotFoundException;
 import org.example.backend.mapper.EntityMapper;
+import org.example.backend.repository.AssetAllocationRepository;
 import org.example.backend.repository.AssetRepository;
 import org.example.backend.repository.DepartmentRepository;
 import org.example.backend.repository.TransferRequestRepository;
@@ -30,6 +33,8 @@ public class TransferRequestService {
     private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final AssetAllocationRepository assetAllocationRepository;
+    private final ActivityLogService activityLogService;
 
     @Transactional(readOnly = true)
     public List<TransferRequestDto> getAllTransfers() {
@@ -67,6 +72,10 @@ public class TransferRequestService {
                 .build();
 
         TransferRequest saved = transferRequestRepository.save(tr);
+
+        // Log Activity
+        activityLogService.log("Transfer Requested", "Transfer requested for asset " + asset.getAssetTag() + " to department " + toDept.getName());
+
         return EntityMapper.toTransferRequestDto(saved);
     }
 
@@ -84,7 +93,32 @@ public class TransferRequestService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
         Asset asset = tr.getAsset();
+
+        // Terminate old active allocation if exists
+        java.util.Optional<AssetAllocation> activeAllocOpt = assetAllocationRepository.findActiveAllocationByAssetId(asset.getId());
+        if (activeAllocOpt.isPresent()) {
+            AssetAllocation oldAlloc = activeAllocOpt.get();
+            oldAlloc.setReturnedDate(java.time.LocalDateTime.now());
+            oldAlloc.setStatus("TRANSFERRED");
+            oldAlloc.setRemarks(oldAlloc.getRemarks() != null 
+                ? oldAlloc.getRemarks() + " | Transferred to " + tr.getToDepartment().getName()
+                : "Transferred to " + tr.getToDepartment().getName());
+            assetAllocationRepository.save(oldAlloc);
+        }
+
+        // Create new allocation for requester
+        AssetAllocation newAlloc = AssetAllocation.builder()
+                .asset(asset)
+                .employee(tr.getRequestedBy())
+                .allocatedDate(java.time.LocalDateTime.now())
+                .status("ALLOCATED")
+                .remarks("Transferred from department " + tr.getFromDepartment().getName())
+                .build();
+        assetAllocationRepository.save(newAlloc);
+
+        // Re-allocate asset
         asset.setDepartment(tr.getToDepartment());
+        asset.setStatus(AssetStatus.ALLOCATED);
         assetRepository.save(asset);
 
         tr.setStatus(TransferStatus.APPROVED);
@@ -97,6 +131,9 @@ public class TransferRequestService {
                 "Your request to transfer '" + asset.getAssetName() + "' to " + tr.getToDepartment().getName() + " department has been approved.",
                 tr.getRequestedBy()
         );
+
+        // Log Activity
+        activityLogService.log("Transfer Approved", "Approved transfer for asset " + asset.getAssetTag() + " to department " + tr.getToDepartment().getName());
 
         return EntityMapper.toTransferRequestDto(saved);
     }
@@ -127,6 +164,9 @@ public class TransferRequestService {
                 "Your request to transfer '" + tr.getAsset().getAssetName() + "' to " + tr.getToDepartment().getName() + " department has been rejected.",
                 tr.getRequestedBy()
         );
+
+        // Log Activity
+        activityLogService.log("Transfer Rejected", "Rejected transfer for asset " + tr.getAsset().getAssetTag());
 
         return EntityMapper.toTransferRequestDto(saved);
     }

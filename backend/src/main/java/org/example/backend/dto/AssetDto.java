@@ -24,6 +24,8 @@ public class AssetDto {
     private LocalDate purchaseDate;
     private BigDecimal purchasePrice;
     private String vendor;
+    private BigDecimal acquisitionCost;
+    private boolean sharedBookable;
     private String location;
     private AssetStatus status;
     private AssetCondition condition;
@@ -51,6 +53,8 @@ public class AssetDto {
         private LocalDate purchaseDate;
         private BigDecimal purchasePrice;
         private String vendor;
+        private BigDecimal acquisitionCost;
+        private boolean sharedBookable;
         private String location;
         private AssetStatus status; // defaults to AVAILABLE if not provided
         private AssetCondition condition; // defaults to GOOD if not provided

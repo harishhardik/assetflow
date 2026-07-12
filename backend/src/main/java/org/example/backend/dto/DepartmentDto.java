@@ -18,5 +18,9 @@ public class DepartmentDto {
 
     private String description;
     private String status;
+    private Long parentDepartmentId;
+    private String parentDepartmentName;
+    private Long departmentHeadId;
+    private String departmentHeadName;
     private LocalDateTime createdAt;
 }
