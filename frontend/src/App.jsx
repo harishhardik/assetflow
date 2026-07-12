@@ -7,6 +7,8 @@ import AllocationTransfer from './pages/AllocationTransfer';
 import ResourceBooking from './pages/ResourceBooking';
 import MaintenanceBoard from './pages/MaintenanceBoard';
 import OrganizationSetup from './pages/OrganizationSetup';
+import Reports from './pages/Reports';
+import Notifications from './pages/Notifications';
 
 function App() {
   const [theme, setTheme] = useState(() => {
@@ -55,6 +57,10 @@ function App() {
         return <MaintenanceBoard userRole={userRole} />;
       case 'organization':
         return <OrganizationSetup userRole={userRole} />;
+      case 'reports':
+        return <Reports />;
+      case 'notifications':
+        return <Notifications />;
       default:
         return <Dashboard userRole={userRole} setCurrentView={setCurrentView} />;
     }

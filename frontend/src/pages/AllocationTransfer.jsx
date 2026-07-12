@@ -377,58 +377,101 @@ function AllocationTransfer({ userRole }) {
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar text-on-surface">
+              {/* Asset Display */}
               <div className="space-y-2">
-                <label className="font-label-md text-label-md block font-semibold text-on-surface-variant">Select Asset</label>
-                <select className="w-full bg-surface border border-outline-variant/60 rounded-xl p-3 text-sm focus:border-primary outline-none">
-                  <option>Precision T7800 Workstation (SN-4492)</option>
-                  <option>UltraSharp 49" Monitor (SN-8812)</option>
-                  <option>MacBook Pro 16" (SN-0021)</option>
-                </select>
+                <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider block">Asset</label>
+                <input 
+                  type="text" 
+                  readOnly 
+                  value="AF-0114 - Dell laptop" 
+                  className="w-full bg-surface-container-highest/60 border border-outline-variant/60 rounded-xl p-3 text-sm outline-none text-on-surface font-bold" 
+                />
               </div>
 
-              <div className="space-y-2">
-                <label className="font-label-md text-label-md block font-semibold text-on-surface-variant">Assignee</label>
-                <div className="relative">
-                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-                  <input type="text" placeholder="Search employee..." className="w-full bg-surface border border-outline-variant/60 rounded-xl p-3 pl-10 text-sm focus:border-primary outline-none" />
+              {/* Already Allocated Block Warning */}
+              <div className="p-3.5 bg-error/10 border border-error/30 rounded-xl text-error flex items-start gap-3">
+                <span className="material-symbols-outlined text-sm font-bold shrink-0 mt-0.5">warning</span>
+                <div className="text-xs leading-relaxed font-semibold">
+                  <p className="text-error font-bold">Already Allocated to Priya shah (Engineering)</p>
+                  <p className="text-on-surface-variant/90 mt-0.5">Direct re-allocation is blocked - submit a transfer request below</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="font-label-md text-label-md block font-semibold text-on-surface-variant">From Date</label>
-                  <input type="date" className="w-full bg-surface border border-outline-variant/60 rounded-xl p-3 text-sm focus:border-primary outline-none text-on-surface" />
-                </div>
-                <div className="space-y-2">
-                  <label className="font-label-md text-label-md block font-semibold text-on-surface-variant">To Date</label>
-                  <input type="date" className="w-full bg-surface border border-outline-variant/60 rounded-xl p-3 text-sm focus:border-primary outline-none text-on-surface" />
+              {/* Transfer Request Section */}
+              <div className="pt-2">
+                <h4 className="text-xs text-primary font-bold uppercase tracking-wider mb-4 border-b border-outline-variant/20 pb-2">Transfer Request</h4>
+                
+                <div className="space-y-4">
+                  {/* From Field */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider block">From</label>
+                    <input 
+                      type="text" 
+                      readOnly 
+                      value="Priya Shah" 
+                      className="w-full bg-surface-container border border-outline-variant/60 rounded-xl p-3 text-sm outline-none text-on-surface-variant font-semibold" 
+                    />
+                  </div>
+
+                  {/* To Field */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider block">To</label>
+                    <select className="w-full bg-surface border border-outline-variant/60 rounded-xl p-3 text-sm focus:border-primary outline-none text-on-surface font-semibold">
+                      <option>Select Employee....</option>
+                      <option>Sarah Jenkins (Marketing)</option>
+                      <option>David Wright (Engineering)</option>
+                      <option>Marcus Thorne (Design)</option>
+                    </select>
+                  </div>
+
+                  {/* Reason Field */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider block">Reason</label>
+                    <textarea 
+                      rows="3" 
+                      placeholder="Enter operational reason for this hardware transfer..." 
+                      className="w-full bg-surface border border-outline-variant/60 rounded-xl p-3 text-sm focus:border-primary outline-none resize-none" 
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="font-label-md text-label-md block font-semibold text-on-surface-variant">Notes</label>
-                <textarea rows="4" placeholder="Reason for allocation request..." className="w-full bg-surface border border-outline-variant/60 rounded-xl p-3 text-sm focus:border-primary outline-none resize-none" />
-              </div>
-
-              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex gap-3">
-                <span className="material-symbols-outlined text-primary">info</span>
-                <p className="text-xs text-on-surface-variant leading-relaxed">
-                  This asset is currently in high demand. Allocations exceeding 30 days might trigger automated conflict alerts.
-                </p>
+              {/* Allocation History */}
+              <div className="pt-4 border-t border-outline-variant/30">
+                <h4 className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-3">Allocation history</h4>
+                <div className="space-y-3 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-outline-variant/40 pl-1">
+                  <div className="flex gap-3 pl-3 text-xs leading-normal font-medium">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0 z-10 border border-surface shadow-sm"></div>
+                    <div>
+                      <p className="text-on-surface font-bold">Mar 12</p>
+                      <p className="text-on-surface-variant mt-0.5">Allocated to Priya shah - Engineering</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 pl-3 text-xs leading-normal font-medium text-on-surface-variant">
+                    <div className="w-1.5 h-1.5 rounded-full bg-outline mt-1.5 shrink-0 z-10 border border-surface shadow-sm"></div>
+                    <div>
+                      <p className="font-bold">Jan 04</p>
+                      <p className="mt-0.5">Returned by Arjun Nair - condition: good</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="p-6 border-t border-outline-variant/60 bg-surface-container-high/90 backdrop-blur-md flex gap-3">
+            <div className="p-6 border-t border-outline-variant/60 bg-surface-container-high/90 backdrop-blur-md flex gap-3 flex-shrink-0">
               <button 
-                onClick={() => setIsDrawerOpen(false)}
-                className="flex-1 py-3 bg-primary text-on-primary font-bold rounded-xl hover:brightness-110 transition-all shadow-md active:scale-95"
+                onClick={() => {
+                  alert('Transfer request submitted successfully!');
+                  setIsDrawerOpen(false);
+                }}
+                className="flex-1 py-3 bg-primary text-on-primary font-bold rounded-xl hover:brightness-110 transition-all shadow-md active:scale-95 text-sm"
               >
                 Submit Request
               </button>
               <button 
                 onClick={() => setIsDrawerOpen(false)}
-                className="px-6 py-3 border border-outline-variant rounded-xl font-bold hover:bg-surface-bright transition-all active:scale-95 text-on-surface-variant hover:text-on-surface"
+                className="px-6 py-3 border border-outline-variant rounded-xl font-bold hover:bg-surface-bright transition-all active:scale-95 text-on-surface-variant hover:text-on-surface text-sm"
               >
                 Cancel
               </button>

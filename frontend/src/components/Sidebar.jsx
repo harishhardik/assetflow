@@ -45,7 +45,9 @@ function Sidebar({ userRole, currentView, setCurrentView, onLogout }) {
     { id: 'assets', label: 'Assets', icon: 'inventory_2', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
     { id: 'allocation', label: 'Allocation & Transfer', icon: 'move_up', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
     { id: 'booking', label: 'Resource Booking', icon: 'event_available', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
-    { id: 'maintenance', label: 'Maintenance', icon: 'build', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] }
+    { id: 'maintenance', label: 'Maintenance', icon: 'build', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
+    { id: 'reports', label: 'Reports', icon: 'analytics', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
+    { id: 'notifications', label: 'Notifications', icon: 'notifications', roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] }
   ];
 
   // Filter navigation items by active user role
@@ -67,7 +69,7 @@ function Sidebar({ userRole, currentView, setCurrentView, onLogout }) {
       </div>
 
       {/* Main Navigation Links */}
-      <nav className="flex-1 px-4 space-y-1.5">
+      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto custom-scrollbar">
         {visibleNavItems.map(item => {
           const isActive = currentView === item.id;
           return (

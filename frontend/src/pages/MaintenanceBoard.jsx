@@ -21,13 +21,29 @@ function MaintenanceBoard({ userRole }) {
       priority: 'Danger', // Danger, Warning, Success
       assignee: 'Unassigned',
       avatar: '',
-      date: 'Oct 24, 2023',
+      date: 'Oct 24, 2026',
       assetName: 'Industrial Carrier X400',
       assetLoc: 'Server Room 102 - Row A',
       report: 'Coolant pressure sensors triggered an alarm at 02:45 AM. Manual visual inspection confirms a hairline fracture in the secondary discharge pipe. Risk of localized freezing if not addressed within 48 hours. Temperature in Server Room 102 has already risen by 1.2°C.',
       logs: [
         { title: 'Ticket Created by System Monitoring', time: 'Oct 24, 02:45 AM', done: true },
         { title: 'Manual Inspection Added by security_ops', time: 'Oct 24, 03:15 AM', done: false }
+      ]
+    },
+    {
+      id: 'AF-309',
+      title: 'Render Farm Offline',
+      desc: 'Render Farm Cluster A (Racks 09-12) taken offline for critical diagnostics check due to resource scheduler errors.',
+      status: 'Pending',
+      priority: 'Warning',
+      assignee: 'Unassigned',
+      avatar: '',
+      date: 'Oct 24, 2026',
+      assetName: 'Render Farm Cluster A',
+      assetLoc: 'Server Center - Row F',
+      report: 'Scheduler nodes lost connection. Nodes 09 through 12 have been isolated for diagnostics and hardware inspection.',
+      logs: [
+        { title: 'Scheduler Outage Logged', time: 'Oct 24, 08:30 AM', done: true }
       ]
     },
     {
@@ -38,7 +54,7 @@ function MaintenanceBoard({ userRole }) {
       priority: 'Success',
       assignee: 'Unassigned',
       avatar: '',
-      date: 'Oct 26, 2023',
+      date: 'Oct 26, 2026',
       assetName: 'Kone Traction Elevator',
       assetLoc: 'West Lobby Wing',
       report: 'Standard compliance inspection mandated by local building codes. Focus on cable wear and brake system certifications.',
@@ -52,7 +68,7 @@ function MaintenanceBoard({ userRole }) {
       priority: 'Warning',
       assignee: 'Sarah Jenkins',
       avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBfxGY-75s6CNUUFX--4P3I9hVAKqU5hGCYsSztA7dntyJMsxTwxnZeT1ktjlO4HfrmjcBHhH83Bev9Jk_-x818UaL19vlFTT7x8Ahjb_fzZiL-PurNcngxCO0J6ene-ejGlE9N52dZBIagpF1PJZNUkg1gEaW5iExBfDs9luvtbjvxubibiLyhPPRhuNiJkNf1iRb78TnDFzn4S-IaDu0YP9qKweQ12m1lQKgRcsTgc3sCGghW6-R4YlEn2Vn2cQlVpvfgD0_hgJ3N',
-      date: 'Oct 22, 2023',
+      date: 'Oct 22, 2026',
       assetName: 'Lutron Energy Grid #B',
       assetLoc: 'Sublevel P2 Garage',
       report: 'Sensors in Section B are stuck high, preventing parking lot lights from cycling down during daylight hours.',
@@ -69,7 +85,7 @@ function MaintenanceBoard({ userRole }) {
       priority: 'Danger',
       assignee: 'Marcus Thorne',
       avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCH5kJ31fOxVJ2agX6ih5CKA8zJXINwq09aBdPUwn729CPRzw4u0oHE-Bg_lOBwtS42h06OLtIcb4phIyqE0FjiNmgk-hhqHlyybyiw6qf5f4P8U1yToD0QYKOvskvbQrdRcbO7o0s0Mo5aKsgeP0KRzi0SAs7OCYY32O3RNxjdjF266srd04XB4f8evE9i78J_6iZ-rtmm8q65zYJjmVctM2UJLU00mq9omXW8A1OFC-PPFD-LpG8_nWsFV-Iwgb2Nun3eeaDroBBK',
-      date: 'Oct 21, 2023',
+      date: 'Oct 21, 2026',
       assetName: 'Caterpillar 500kVA Gen',
       assetLoc: 'Utility Yard - Grid South',
       report: 'Diagnostic engine codes indicate low fuel line pressure. Technician dispatched with replacement pump seals.',
@@ -86,7 +102,7 @@ function MaintenanceBoard({ userRole }) {
       priority: 'Warning',
       assignee: 'David Wu',
       avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA0Un6Ur96OpqspaN546hFBEmCRlm9VfNm6XuhxZ4QHzlmKlJTrNeAF-GWhF7Y2XutzglL9eRMPHNTvsetqXB_txFTvm0aLz3fu3R7TSw7fJunuoCPAvviOONq3U_Rj7kVbDAKtoOSD0sfgmzp5s7CzF8Ly1FQ-bKTpCKF4xPWLljkDt4MW85msdghgTIQBZrpDQ9jRzPESUTXMAaYmSmhrpR5PL5btH4VBwivHKbg5inHUoy69xc2ezxLRfaFIahgw_6rg2Wext8iO',
-      date: 'Oct 25, 2023',
+      date: 'Oct 25, 2026',
       assetName: 'Roof Membranes Block B',
       assetLoc: 'Main Roof Terrace',
       report: 'Applying elastomeric liquid sealant to roof seams. Requires 12 hours dry curing before final inspection.',
@@ -103,7 +119,7 @@ function MaintenanceBoard({ userRole }) {
       priority: 'Success',
       assignee: 'David Wu',
       avatar: '',
-      date: 'Oct 23, 2023',
+      date: 'Oct 23, 2026',
       assetName: 'Ubiquiti AP-AC-PRO',
       assetLoc: 'Office Area - Floor 2',
       report: 'Signal dropping reported by HR staff. Diagnostic power cycle performed remotely. Signal levels restored.',
@@ -368,22 +384,31 @@ function MaintenanceBoard({ userRole }) {
             </div>
 
             {/* Footer actions */}
-            <div className="p-6 border-t border-outline-variant/60 bg-surface-container-high/90 backdrop-blur-md grid grid-cols-2 gap-4">
-              <button 
-                onClick={() => setIsDrawerOpen(false)}
-                className="py-3 border border-outline-variant rounded-xl font-bold hover:bg-surface-bright transition-all active:scale-95 text-on-surface-variant hover:text-on-surface"
-              >
-                Reject Ticket
-              </button>
-              {selectedTicket.assignee === 'Unassigned' && (
+            {selectedTicket.assignee === 'Unassigned' ? (
+              <div className="p-6 border-t border-outline-variant/60 bg-surface-container-high/90 backdrop-blur-md grid grid-cols-2 gap-4">
+                <button 
+                  onClick={() => {
+                    const updatedTickets = tickets.filter(t => t.id !== selectedTicket.id);
+                    setTickets(updatedTickets);
+                    setIsDrawerOpen(false);
+                  }}
+                  className="py-3 border border-outline-variant rounded-xl font-bold hover:bg-surface-bright transition-all active:scale-95 text-on-surface-variant hover:text-on-surface text-sm"
+                >
+                  Reject Ticket
+                </button>
                 <button 
                   onClick={handleAssignTechnician}
-                  className="py-3 bg-primary text-on-primary rounded-xl font-bold hover:brightness-110 active:scale-95 transition-all shadow-md"
+                  className="py-3 bg-primary text-on-primary rounded-xl font-bold hover:brightness-110 active:scale-95 transition-all shadow-md text-sm"
                 >
                   Assign Myself
                 </button>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="p-6 border-t border-outline-variant/60 bg-surface-container-high/90 backdrop-blur-md flex justify-center items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                <span className="text-xs text-on-surface-variant font-bold">Assigned to {selectedTicket.assignee}</span>
+              </div>
+            )}
           </div>
         </div>
       )}
