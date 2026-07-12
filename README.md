@@ -451,7 +451,7 @@ By end of hackathon:
 
 - **Problem Statement**: See uploaded `AssetFlow_problem_statement.pdf`
 - **Mockup**: https://app.excalidraw.com/l/65VNwvy7c4X/5ceOBMjbDby
-- **Git Repo**: (https://github.com/harishhardik/assetflow)
+- **Git Repo**: https://github.com/harishhardik/assetflow
 
 
 
