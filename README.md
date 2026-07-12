@@ -304,7 +304,7 @@ CREATE TABLE activity_logs (
 
 ---
 
-## 📱 UI Screens (Priority Order)
+##  UI Screens (Priority Order)
 
 ### Tier 1 (Must Have by Hour 4)
 1. Login / Signup
@@ -422,19 +422,19 @@ npm run seed
 ##  Success Criteria (Judging)
 
 By end of hackathon:
-- ✅ Users can register, login, and see their role-based dashboard
-- ✅ Assets can be registered, allocated, and returned (full lifecycle)
-- ✅ Bookings prevent overlaps
-- ✅ Maintenance requests flow through approval and update asset status
-- ✅ Audit cycles run and flag discrepancies
-- ✅ Database enforces business rules (no orphaned allocations, valid status transitions)
-- ✅ At least one report exports (CSV)
-- ✅ Notifications or activity log works
-- ✅ Responsive UI on desktop (mobile bonus)
+-  Users can register, login, and see their role-based dashboard
+-  Assets can be registered, allocated, and returned (full lifecycle)
+-  Bookings prevent overlaps
+-  Maintenance requests flow through approval and update asset status
+-  Audit cycles run and flag discrepancies
+-  Database enforces business rules (no orphaned allocations, valid status transitions)
+-  At least one report exports (CSV)
+-  Notifications or activity log works
+-  Responsive UI on desktop (mobile bonus)
 
 ---
 
-## 🎯 Bonus Features (If Time Permits)
+##  Bonus Features (If Time Permits)
 
 - Department-wise asset utilization heatmap
 - Mobile app (React Native)
@@ -447,7 +447,7 @@ By end of hackathon:
 
 ---
 
-## 📚 References
+## References
 
 - **Problem Statement**: See uploaded `AssetFlow_problem_statement.pdf`
 - **Mockup**: https://app.excalidraw.com/l/65VNwvy7c4X/5ceOBMjbDby
