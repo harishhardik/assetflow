@@ -26,6 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final ActivityLogService activityLogService;
 
     @Transactional
     public AuthDto.UserDto register(AuthDto.UserRegistrationDto request) {
@@ -36,7 +37,7 @@ public class AuthService {
         Department department = departmentRepository.findById(request.getDepartmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with ID: " + request.getDepartmentId()));
 
-        RoleType role = request.getRole() != null ? request.getRole() : RoleType.EMPLOYEE;
+        RoleType role = RoleType.EMPLOYEE; // Signup creates an Employee account only (no self-elevation)
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -49,6 +50,7 @@ public class AuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
+        activityLogService.log("User Registered", "User registered: " + savedUser.getEmail() + " in department: " + department.getName());
         return EntityMapper.toUserDto(savedUser);
     }
 
@@ -64,6 +66,7 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + request.getEmail()));
 
         String jwtToken = jwtService.generateToken(user);
+        activityLogService.log("User Logged In", "User logged in: " + user.getEmail());
         return AuthDto.AuthResponse.builder()
                 .token(jwtToken)
                 .user(EntityMapper.toUserDto(user))

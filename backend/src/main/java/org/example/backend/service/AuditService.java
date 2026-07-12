@@ -5,15 +5,18 @@ import org.example.backend.dto.AuditCycleDto;
 import org.example.backend.entity.Asset;
 import org.example.backend.entity.AuditCycle;
 import org.example.backend.entity.AuditItem;
+import org.example.backend.entity.Department;
 import org.example.backend.entity.User;
 import org.example.backend.enums.AssetCondition;
 import org.example.backend.enums.AuditItemStatus;
+import org.example.backend.enums.AssetStatus;
 import org.example.backend.exception.ConflictException;
 import org.example.backend.exception.ResourceNotFoundException;
 import org.example.backend.mapper.EntityMapper;
 import org.example.backend.repository.AssetRepository;
 import org.example.backend.repository.AuditCycleRepository;
 import org.example.backend.repository.AuditItemRepository;
+import org.example.backend.repository.DepartmentRepository;
 import org.example.backend.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,8 @@ public class AuditService {
     private final AuditItemRepository auditItemRepository;
     private final AssetRepository assetRepository;
     private final UserRepository userRepository;
+    private final DepartmentRepository departmentRepository;
+    private final ActivityLogService activityLogService;
 
     @Transactional
     public AuditCycleDto createCycle(AuditCycleDto.Create dto) {
@@ -39,15 +44,24 @@ public class AuditService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
+        Department dept = null;
+        if (dto.getDepartmentId() != null) {
+            dept = departmentRepository.findById(dto.getDepartmentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Department not found with ID: " + dto.getDepartmentId()));
+        }
+
         AuditCycle cycle = AuditCycle.builder()
                 .name(dto.getName())
                 .startDate(dto.getStartDate() != null ? dto.getStartDate() : LocalDate.now())
                 .endDate(dto.getEndDate())
                 .status("ACTIVE")
+                .department(dept)
+                .location(dto.getLocation())
                 .createdBy(user)
                 .build();
 
         AuditCycle saved = auditCycleRepository.save(cycle);
+        activityLogService.log("Audit Cycle Created", "Created audit cycle: " + saved.getName());
         return EntityMapper.toAuditCycleDto(saved);
     }
 
@@ -94,6 +108,7 @@ public class AuditService {
         }
 
         AuditItem saved = auditItemRepository.save(item);
+        activityLogService.log("Asset Audited", "Audited asset " + asset.getAssetTag() + " in cycle " + cycle.getName() + " as " + dto.getStatus());
         return EntityMapper.toAuditItemDto(saved);
     }
 
@@ -102,11 +117,31 @@ public class AuditService {
         AuditCycle cycle = auditCycleRepository.findById(cycleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Audit cycle not found with ID: " + cycleId));
 
+        if ("CLOSED".equals(cycle.getStatus())) {
+            throw new ConflictException("Audit cycle is already closed");
+        }
+
         cycle.setStatus("CLOSED");
         if (cycle.getEndDate() == null) {
             cycle.setEndDate(LocalDate.now());
         }
+
+        // Process audit items and update asset statuses (e.g. LOST for missing, RETIRED/DAMAGED for damaged)
+        List<AuditItem> items = auditItemRepository.findByAuditCycleId(cycleId);
+        for (AuditItem item : items) {
+            Asset asset = item.getAsset();
+            if (item.getStatus() == AuditItemStatus.MISSING) {
+                asset.setStatus(AssetStatus.LOST);
+                assetRepository.save(asset);
+            } else if (item.getStatus() == AuditItemStatus.DAMAGED) {
+                asset.setCondition(AssetCondition.DAMAGED);
+                asset.setStatus(AssetStatus.RETIRED);
+                assetRepository.save(asset);
+            }
+        }
+
         AuditCycle saved = auditCycleRepository.save(cycle);
+        activityLogService.log("Audit Cycle Closed", "Closed audit cycle: " + cycle.getName());
         return EntityMapper.toAuditCycleDto(saved);
     }
 

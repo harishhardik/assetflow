@@ -20,4 +20,7 @@ public class Category {
     private String name;
 
     private String description;
+
+    @Column(name = "warranty_period")
+    private Integer warrantyPeriod;
 }

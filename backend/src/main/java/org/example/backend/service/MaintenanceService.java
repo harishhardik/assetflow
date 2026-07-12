@@ -29,6 +29,7 @@ public class MaintenanceService {
     private final AssetRepository assetRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final ActivityLogService activityLogService;
 
     @Transactional
     public MaintenanceDto raiseRequest(MaintenanceDto.Create dto) {
@@ -39,9 +40,7 @@ public class MaintenanceService {
         User reporter = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
-        // Update asset status to MAINTENANCE
-        asset.setStatus(AssetStatus.MAINTENANCE);
-        assetRepository.save(asset);
+        // Note: Asset status remains unchanged until approved
 
         Maintenance mt = Maintenance.builder()
                 .asset(asset)
@@ -53,6 +52,10 @@ public class MaintenanceService {
                 .build();
 
         Maintenance saved = maintenanceRepository.save(mt);
+
+        // Log Activity
+        activityLogService.log("Maintenance Requested", "Raised maintenance request for asset " + asset.getAssetTag());
+
         return EntityMapper.toMaintenanceDto(saved);
     }
 
@@ -66,7 +69,42 @@ public class MaintenanceService {
         }
 
         mt.setStatus(MaintenanceStatus.APPROVED);
+
+        // Auto-update asset status to UNDER_MAINTENANCE on approval
+        Asset asset = mt.getAsset();
+        asset.setStatus(AssetStatus.UNDER_MAINTENANCE);
+        assetRepository.save(asset);
+
         Maintenance saved = maintenanceRepository.save(mt);
+
+        // Log Activity
+        activityLogService.log("Maintenance Approved", "Approved maintenance request for asset " + asset.getAssetTag());
+
+        return EntityMapper.toMaintenanceDto(saved);
+    }
+
+    @Transactional
+    public MaintenanceDto rejectRequest(Long id) {
+        Maintenance mt = maintenanceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Maintenance request not found with ID: " + id));
+
+        if (mt.getStatus() != MaintenanceStatus.PENDING) {
+            throw new ConflictException("Maintenance request is already resolved or approved: " + mt.getStatus());
+        }
+
+        mt.setStatus(MaintenanceStatus.REJECTED);
+        Maintenance saved = maintenanceRepository.save(mt);
+
+        // Generate Notification
+        notificationService.createNotification(
+                "Maintenance Rejected",
+                "Maintenance request for asset '" + mt.getAsset().getAssetName() + "' has been rejected.",
+                mt.getReportedBy()
+        );
+
+        // Log Activity
+        activityLogService.log("Maintenance Rejected", "Rejected maintenance request for asset " + mt.getAsset().getAssetTag());
+
         return EntityMapper.toMaintenanceDto(saved);
     }
 
@@ -75,8 +113,8 @@ public class MaintenanceService {
         Maintenance mt = maintenanceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Maintenance request not found with ID: " + id));
 
-        if (mt.getStatus() == MaintenanceStatus.RESOLVED) {
-            throw new ConflictException("Cannot assign a resolved maintenance request");
+        if (mt.getStatus() == MaintenanceStatus.RESOLVED || mt.getStatus() == MaintenanceStatus.REJECTED) {
+            throw new ConflictException("Cannot assign a maintenance request in status: " + mt.getStatus());
         }
 
         User assignee = userRepository.findById(employeeId)
@@ -93,6 +131,9 @@ public class MaintenanceService {
                 assignee
         );
 
+        // Log Activity
+        activityLogService.log("Maintenance Assigned", "Assigned maintenance request for asset " + mt.getAsset().getAssetTag() + " to " + assignee.getEmail());
+
         return EntityMapper.toMaintenanceDto(saved);
     }
 
@@ -101,12 +142,16 @@ public class MaintenanceService {
         Maintenance mt = maintenanceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Maintenance request not found with ID: " + id));
 
-        if (mt.getStatus() == MaintenanceStatus.PENDING || mt.getStatus() == MaintenanceStatus.RESOLVED) {
+        if (mt.getStatus() == MaintenanceStatus.PENDING || mt.getStatus() == MaintenanceStatus.RESOLVED || mt.getStatus() == MaintenanceStatus.REJECTED) {
             throw new ConflictException("Cannot start work on request in status: " + mt.getStatus());
         }
 
         mt.setStatus(MaintenanceStatus.IN_PROGRESS);
         Maintenance saved = maintenanceRepository.save(mt);
+
+        // Log Activity
+        activityLogService.log("Maintenance Started", "Started maintenance work on asset " + mt.getAsset().getAssetTag());
+
         return EntityMapper.toMaintenanceDto(saved);
     }
 
@@ -115,8 +160,8 @@ public class MaintenanceService {
         Maintenance mt = maintenanceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Maintenance request not found with ID: " + id));
 
-        if (mt.getStatus() == MaintenanceStatus.RESOLVED) {
-            throw new ConflictException("Maintenance request is already resolved");
+        if (mt.getStatus() == MaintenanceStatus.RESOLVED || mt.getStatus() == MaintenanceStatus.REJECTED) {
+            throw new ConflictException("Maintenance request is in invalid status: " + mt.getStatus());
         }
 
         mt.setStatus(MaintenanceStatus.RESOLVED);
@@ -128,6 +173,10 @@ public class MaintenanceService {
         assetRepository.save(asset);
 
         Maintenance saved = maintenanceRepository.save(mt);
+
+        // Log Activity
+        activityLogService.log("Maintenance Resolved", "Resolved maintenance request for asset " + asset.getAssetTag());
+
         return EntityMapper.toMaintenanceDto(saved);
     }
 

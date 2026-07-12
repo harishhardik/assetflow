@@ -28,7 +28,7 @@ public class SignupRequest {
     @NotBlank(message = "Password is required")
     private String password;
 
-    private String phone;
+
 
     @NotBlank(message = "Department is required")
     private String department;

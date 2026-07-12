@@ -12,6 +12,10 @@ public class EntityMapper {
                 .name(dept.getName())
                 .description(dept.getDescription())
                 .status(dept.getStatus())
+                .parentDepartmentId(dept.getParentDepartment() != null ? dept.getParentDepartment().getId() : null)
+                .parentDepartmentName(dept.getParentDepartment() != null ? dept.getParentDepartment().getName() : null)
+                .departmentHeadId(dept.getDepartmentHead() != null ? dept.getDepartmentHead().getId() : null)
+                .departmentHeadName(dept.getDepartmentHead() != null ? dept.getDepartmentHead().getFullName() : null)
                 .createdAt(dept.getCreatedAt())
                 .build();
     }
@@ -32,6 +36,7 @@ public class EntityMapper {
                 .id(cat.getId())
                 .name(cat.getName())
                 .description(cat.getDescription())
+                .warrantyPeriod(cat.getWarrantyPeriod())
                 .build();
     }
 
@@ -70,6 +75,8 @@ public class EntityMapper {
                 .purchaseDate(asset.getPurchaseDate())
                 .purchasePrice(asset.getPurchasePrice())
                 .vendor(asset.getVendor())
+                .acquisitionCost(asset.getAcquisitionCost())
+                .sharedBookable(asset.isSharedBookable())
                 .location(asset.getLocation())
                 .status(asset.getStatus())
                 .condition(asset.getCondition())
@@ -182,6 +189,9 @@ public class EntityMapper {
                 .startDate(ac.getStartDate())
                 .endDate(ac.getEndDate())
                 .status(ac.getStatus())
+                .departmentId(ac.getDepartment() != null ? ac.getDepartment().getId() : null)
+                .departmentName(ac.getDepartment() != null ? ac.getDepartment().getName() : null)
+                .location(ac.getLocation())
                 .createdBy(toUserDto(ac.getCreatedBy()))
                 .createdAt(ac.getCreatedAt())
                 .build();
@@ -242,6 +252,18 @@ public class EntityMapper {
                 .assignedToName(mt.getAssignedTo() != null ? mt.getAssignedTo().getFullName() : null)
                 .createdAt(mt.getCreatedAt())
                 .completedAt(mt.getCompletedAt())
+                .build();
+    }
+
+    public static ActivityLogDto toActivityLogDto(ActivityLog log) {
+        if (log == null) return null;
+        return ActivityLogDto.builder()
+                .id(log.getId())
+                .action(log.getAction())
+                .details(log.getDetails())
+                .performedByName(log.getPerformedBy() != null ? log.getPerformedBy().getFullName() : "System")
+                .performedByEmail(log.getPerformedBy() != null ? log.getPerformedBy().getEmail() : null)
+                .createdAt(log.getCreatedAt())
                 .build();
     }
 }

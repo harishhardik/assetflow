@@ -37,4 +37,10 @@ public class ReportController {
     public ResponseEntity<List<ReportsDto.DepartmentReport>> getDepartmentReports() {
         return ResponseEntity.ok(reportService.getDepartmentReports());
     }
+
+    @GetMapping("/bookings")
+    @Operation(summary = "Get booking heatmap and resource usage stats")
+    public ResponseEntity<ReportsDto.BookingReport> getBookingReport() {
+        return ResponseEntity.ok(reportService.getBookingReport());
+    }
 }

@@ -41,6 +41,13 @@ public class Asset {
 
     private String vendor;
 
+    @Column(name = "acquisition_cost")
+    private BigDecimal acquisitionCost;
+
+    @Column(name = "shared_bookable")
+    @Builder.Default
+    private boolean sharedBookable = false;
+
     private String location;
 
     @Enumerated(EnumType.STRING)

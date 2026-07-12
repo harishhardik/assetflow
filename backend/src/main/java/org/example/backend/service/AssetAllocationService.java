@@ -36,6 +36,7 @@ public class AssetAllocationService {
     private final DepartmentRepository departmentRepository;
     private final TransferRequestRepository transferRequestRepository;
     private final NotificationService notificationService;
+    private final ActivityLogService activityLogService;
 
     @Transactional
     public AssetAllocationDto allocateAsset(AssetAllocationDto.Create request) {
@@ -43,6 +44,10 @@ public class AssetAllocationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found with ID: " + request.getAssetId()));
 
         if (asset.getStatus() != AssetStatus.AVAILABLE) {
+            java.util.Optional<AssetAllocation> activeAllocation = assetAllocationRepository.findActiveAllocationByAssetId(asset.getId());
+            if (activeAllocation.isPresent()) {
+                throw new ConflictException("Asset '" + asset.getAssetTag() + "' is currently held by " + activeAllocation.get().getEmployee().getFullName() + ". Would you like to request a transfer?");
+            }
             throw new ConflictException("Asset cannot be allocated. Current status is: " + asset.getStatus());
         }
 
@@ -69,6 +74,9 @@ public class AssetAllocationService {
                 "Asset '" + asset.getAssetName() + "' (" + asset.getAssetTag() + ") has been allocated to you.",
                 employee
         );
+
+        // Log Activity
+        activityLogService.log("Asset Allocated", "Asset " + asset.getAssetTag() + " allocated to employee " + employee.getEmail());
 
         return EntityMapper.toAssetAllocationDto(saved);
     }
@@ -101,6 +109,9 @@ public class AssetAllocationService {
                 allocation.getEmployee()
         );
 
+        // Log Activity
+        activityLogService.log("Asset Returned", "Asset " + asset.getAssetTag() + " returned. Condition: " + asset.getCondition());
+
         return EntityMapper.toAssetAllocationDto(saved);
     }
 
@@ -131,6 +142,10 @@ public class AssetAllocationService {
                 .build();
 
         TransferRequest saved = transferRequestRepository.save(transferRequest);
+
+        // Log Activity
+        activityLogService.log("Transfer Requested", "Transfer requested for asset " + asset.getAssetTag() + " to department " + toDept.getName());
+
         return EntityMapper.toTransferRequestDto(saved);
     }
 

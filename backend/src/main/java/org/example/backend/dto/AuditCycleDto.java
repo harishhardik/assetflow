@@ -20,6 +20,9 @@ public class AuditCycleDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private String status;
+    private Long departmentId;
+    private String departmentName;
+    private String location;
     private AuthDto.UserDto createdBy;
     private LocalDateTime createdAt;
 
@@ -34,6 +37,8 @@ public class AuditCycleDto {
 
         private LocalDate startDate;
         private LocalDate endDate;
+        private Long departmentId;
+        private String location;
     }
 
     @Getter
